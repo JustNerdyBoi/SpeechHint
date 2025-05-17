@@ -8,7 +8,7 @@ public class LinkedText {
     private Node tail;
     private int size;
 
-    private static class Node {
+    public static class Node {
         String word;
         Node next;
         Node prev;
@@ -26,6 +26,10 @@ public class LinkedText {
         size = 0;
     }
 
+    public Node getHead() {
+        return head;
+    }
+
     // Add a new word to the end of the list
     public void addWord(String word) {
         if (word == null || word.trim().isEmpty()) {
@@ -33,7 +37,7 @@ public class LinkedText {
         }
 
         Node newNode = new Node(word.trim());
-        
+
         if (head == null) {
             head = newNode;
             tail = newNode;
@@ -118,6 +122,11 @@ public class LinkedText {
             return word -> word.contains(substring);
         }
 
+        // Filter for words containing a substring (case insensitive)
+        public static WordFilter containsCaseInsensitive(String substring) {
+            return word -> word.toLowerCase().contains(substring.toLowerCase());
+        }
+
         // Filter for words matching a regex pattern
         public static WordFilter regexMatch(String pattern) {
             return word -> word.matches(pattern);
@@ -133,6 +142,14 @@ public class LinkedText {
             this.beforeSize = beforeSize;
             this.afterSize = afterSize;
             this.current = head;
+        }
+
+        public void moveSteps(int steps) {
+            if (steps >= 0) {
+                moveForward(steps);
+            } else {
+                moveBackward(steps * -1);
+            }
         }
 
         public void moveForward(int steps) {
@@ -171,9 +188,9 @@ public class LinkedText {
         // TODO: Temporary solution
         public String getBufferString() {
             if (current == null) return "";
-            
+
             StringBuilder buffer = new StringBuilder();
-            
+
             // Add words from before buffer
             Node temp = current;
             int count = 0;
@@ -184,10 +201,10 @@ public class LinkedText {
                 }
                 count++;
             }
-            
+
             // Add current word
             buffer.append(current.word);
-            
+
             // Add words from after buffer
             temp = current;
             count = 0;
@@ -198,64 +215,67 @@ public class LinkedText {
                 }
                 count++;
             }
-            
+
             return buffer.toString();
         }
 
         /**
          * Searches for a word in the current buffers and moves to it if found.
          * If not found in buffers and searchFullText is true, searches the entire text.
-         * returns true if the word was found and position was moved, false if wasn'tK
+         * number of steps moved (negative if moved backwards, 0 if not found)
          */
-        public boolean searchAndMoveToWord(String word, WordFilter filter, boolean searchFullText) {
+        public int searchAndMoveToWord(String word, WordFilter filter, boolean searchFullText) {
             if (word == null || word.trim().isEmpty() || current == null) {
-                return false;
+                return 0;
             }
 
             String searchWord = word.trim();
 
             // First check if the current word matches
             if (filter.matches(current.word)) {
-                return true;
+                return 0;
             }
 
-            // Search in before buffer
-            Node temp = current;
-            int stepsBack = 0;
-            while (temp != null && stepsBack < beforeSize) {
-                temp = temp.prev;
-                if (temp != null && filter.matches(temp.word)) {
-                    current = temp;
-                    return true;
-                }
-                stepsBack++;
-            }
 
             // Search in after buffer
-            temp = current;
+            Node temp = current;
             int stepsForward = 0;
             while (temp != null && stepsForward < afterSize) {
                 temp = temp.next;
                 if (temp != null && filter.matches(temp.word)) {
                     current = temp;
-                    return true;
+                    return stepsForward + 1;
                 }
                 stepsForward++;
             }
 
-            // If not found in buffers and searchFullText is true, search the entire text
+            // Search in before buffer
+            temp = current;
+            int stepsBack = 0;
+            while (temp != null && stepsBack < beforeSize) {
+                temp = temp.prev;
+                if (temp != null && filter.matches(temp.word)) {
+                    current = temp;
+                    return -stepsBack - 1;
+                }
+                stepsBack++;
+            }
+
+            //TODO: Redo steps calculation
             if (searchFullText) {
                 temp = head;
+                int totalSteps = 0;
                 while (temp != null) {
                     if (filter.matches(temp.word)) {
                         current = temp;
-                        return true;
+                        return 0;
                     }
                     temp = temp.next;
+                    totalSteps++;
                 }
             }
 
-            return false;
+            return 0;
         }
     }
 } 

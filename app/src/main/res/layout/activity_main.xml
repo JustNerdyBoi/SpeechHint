@@ -8,24 +8,6 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/white"
-        android:elevation="2dp"
-        android:gravity="center"
-        android:padding="16dp"
-        android:text="Select a text file to begin"
-        android:textSize="24sp"
-        android:textColor="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/selectFileButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/selectFileButton"
         android:layout_width="wrap_content"
@@ -36,5 +18,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="341dp"
+        android:layout_height="458dp"
+        app:layout_constraintBottom_toTopOf="@+id/selectFileButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
