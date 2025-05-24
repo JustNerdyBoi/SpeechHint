@@ -62,10 +62,11 @@ public class TextViewerFragment extends Fragment implements WordAdapter.OnWordCl
         }
     };
 
-    public static TextViewerFragment newInstance(LinkedText linkedText) {
+    public static TextViewerFragment newInstance(LinkedText linkedText, int focusPosition) {
         TextViewerFragment fragment = new TextViewerFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_LINKED_TEXT, linkedText);
+        args.putInt(ARG_CURRENT_POSITION, focusPosition);
         fragment.setArguments(args);
         return fragment;
     }

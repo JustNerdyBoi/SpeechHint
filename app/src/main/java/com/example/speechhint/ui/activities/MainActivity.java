@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, getString(R.string.toast_file_loaded_successfully), Toast.LENGTH_SHORT).show();
 
                     // Create and add TextViewerFragment
-                    textViewerFragment = TextViewerFragment.newInstance(text);
+                    textViewerFragment = TextViewerFragment.newInstance(text, 0);
                     getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragmentContainer, textViewerFragment)
