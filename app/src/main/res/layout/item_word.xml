@@ -3,7 +3,7 @@
     android:id="@+id/wordTextView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    android:textSize="16sp"
-    android:textColor="@android:color/black"
-    android:background="@drawable/word_background" /> 
+    android:padding="6dp"
+    android:background="@drawable/word_background"
+    android:textSize="20sp"
+    android:textColor="@android:color/black" />

@@ -1,4 +1,4 @@
-package com.example.speechhint;
+package com.example.speechhint.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +13,6 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public class SpeechRecognitionManager {
-    private static final String TAG = "SpeechHint";
     private static final int RESTART_DELAY_MS = 1000;
 
     private final Context context;
@@ -40,8 +39,6 @@ public class SpeechRecognitionManager {
             speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
             setupRecognitionListener();
             startListening();
-        } else {
-            Log.e(TAG, "Speech recognition is not available on this device");
         }
     }
 
@@ -49,12 +46,10 @@ public class SpeechRecognitionManager {
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
-                Log.d(TAG, "Ready for speech");
             }
 
             @Override
             public void onBeginningOfSpeech() {
-                Log.d(TAG, "Beginning of speech");
             }
 
             @Override
@@ -69,7 +64,6 @@ public class SpeechRecognitionManager {
 
             @Override
             public void onEndOfSpeech() {
-                Log.d(TAG, "End of speech");
                 isListening = false;
                 scheduleRestart();
             }
@@ -110,33 +104,28 @@ public class SpeechRecognitionManager {
                         errorMessage = "Unknown error";
                         break;
                 }
-                Log.e(TAG, "Speech recognition error: " + errorMessage);
+                Log.e("SpeechManager", "Speech recognition error: " + errorMessage);
                 scheduleRestart();
             }
 
             @Override
             public void onResults(Bundle results) {
-                ArrayList<String> matches = results.getStringArrayList(
-                        SpeechRecognizer.RESULTS_RECOGNITION);
-                if (matches != null && !matches.isEmpty()) {
-                    String phrase = matches.get(0);
-                    String lastWord = extractLastWord(phrase);
-                    if (wordDetectedListener != null) {
+                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null && !matches.isEmpty() && wordDetectedListener != null) {
+                    String lastWord = extractLastWord(matches.get(0));
+                    if (!lastWord.isEmpty()) {
                         wordDetectedListener.onWordDetected(lastWord);
                     }
                 }
-                isListening = false;
                 scheduleRestart();
             }
 
             @Override
             public void onPartialResults(Bundle partialResults) {
-                ArrayList<String> matches = partialResults.getStringArrayList(
-                        SpeechRecognizer.RESULTS_RECOGNITION);
-                if (matches != null && !matches.isEmpty()) {
-                    String phrase = matches.get(0);
-                    String lastWord = extractLastWord(phrase);
-                    if (wordDetectedListener != null) {
+                ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null && !matches.isEmpty() && wordDetectedListener != null) {
+                    String lastWord = extractLastWord(matches.get(0));
+                    if (!lastWord.isEmpty()) {
                         wordDetectedListener.onWordDetected(lastWord);
                     }
                 }
@@ -144,13 +133,11 @@ public class SpeechRecognitionManager {
 
             @Override
             public void onEvent(int eventType, Bundle params) {
-                // Optional: Additional events
             }
         });
     }
 
     private void scheduleRestart() {
-        mainHandler.removeCallbacksAndMessages(null);
         mainHandler.postDelayed(this::startListening, RESTART_DELAY_MS);
     }
 
@@ -166,10 +153,8 @@ public class SpeechRecognitionManager {
                 speechRecognizer.startListening(speechIntent);
             } catch (Exception e) {
                 isListening = false;
-                Log.e(TAG, "Error starting speech recognition: " + e.getMessage());
                 scheduleRestart();
             }
-
         }
     }
 

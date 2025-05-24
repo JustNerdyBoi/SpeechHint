@@ -1,11 +1,12 @@
-package com.example.speechhint;
+package com.example.speechhint.ui.layouts;
 
 import android.view.View;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 public class FlowLayoutManager extends RecyclerView.LayoutManager {
     private int horizontalSpacing = 4;
-    private int verticalSpacing = 4;
+    private int verticalSpacing = 8;
     private int verticalOffset = 0;
 
     @Override
@@ -37,6 +38,18 @@ public class FlowLayoutManager extends RecyclerView.LayoutManager {
             int viewWidth = getDecoratedMeasuredWidth(view);
             int viewHeight = getDecoratedMeasuredHeight(view);
 
+            // Check if this is a newline word
+            Object tag = view.getTag();
+
+            if (tag != null && tag.equals("\n")) {
+                currentX = getPaddingLeft();
+                currentY += maxHeight + verticalSpacing * 3; // Add extra spacing for newlines
+                maxHeight = 0;
+                // Hide the newline view
+                layoutDecorated(view, 0, 0, 0, 0);
+                continue;
+            }
+
             if (currentX + viewWidth > width - getPaddingRight()) {
                 currentX = getPaddingLeft();
                 currentY += maxHeight + verticalSpacing;
@@ -55,19 +68,22 @@ public class FlowLayoutManager extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public boolean canScrollHorizontally() {
-        return false;
-    }
-
-    @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         if (getChildCount() == 0) {
             return 0;
         }
 
-        int scroll = dy;
-        verticalOffset += scroll;
-        offsetChildrenVertical(-scroll);
-        return scroll;
+        int lastWordPos = getChildCount() == 0 ? 0 : getChildAt(getChildCount() - 1).getBottom() + verticalSpacing - getHeight();
+
+        if (verticalOffset + dy < 0) {
+            dy = -verticalOffset;
+        } else if (lastWordPos <= 0 && dy > 0) {
+            dy = lastWordPos;
+        }
+
+        offsetChildrenVertical(-dy);
+        verticalOffset += dy;
+
+        return dy;
     }
-} 
+}

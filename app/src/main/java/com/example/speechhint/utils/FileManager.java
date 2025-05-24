@@ -1,8 +1,7 @@
-package com.example.speechhint;
+package com.example.speechhint.utils;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.BufferedReader;
@@ -15,8 +14,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class FileManager {
-    private static final String TAG = "FileManager";
-
     /**
      * Loads a document (.docx, or .txt) from a Uri and converts it into a LinkedText object.
      * Each word in the document becomes a node in the LinkedText.
@@ -54,7 +51,6 @@ public class FileManager {
                 throw new IllegalArgumentException("Unsupported MIME type: " + mimeType);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error reading file: " + e.getMessage(), e);
             throw new IOException("Error reading file: " + e.getMessage(), e);
         }
 
@@ -71,7 +67,6 @@ public class FileManager {
                 ZipEntry entry;
                 while ((entry = zipStream.getNextEntry()) != null) {
                     if (entry.getName().equals("word/document.xml")) {
-                        // Read the entire content into a byte array first
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         byte[] buffer = new byte[1024];
                         int len;
@@ -79,15 +74,29 @@ public class FileManager {
                             baos.write(buffer, 0, len);
                         }
                         
-                        // Convert to string using UTF-8
                         String xmlContent = baos.toString(StandardCharsets.UTF_8.name());
                         String textContent = extractTextFromXml(xmlContent);
                         
-                        // Split content into words and add to LinkedText
-                        String[] words = textContent.split("\\s+");
-                        for (String word : words) {
-                            if (!word.isEmpty()) {
-                                text.addWord(word);
+                        // Split content into paragraphs and add to LinkedText
+                        String[] paragraphs = textContent.split("\n");
+                        boolean isFirstParagraph = true;
+                        
+                        for (String paragraph : paragraphs) {
+                            if (!isFirstParagraph) {
+                                // Add newline between paragraphs
+                                text.addWord("\n");
+                            }
+                            isFirstParagraph = false;
+
+                            if (paragraph.trim().isEmpty()) {
+                                continue;
+                            }
+
+                            String[] words = paragraph.split("\\s+");
+                            for (String word : words) {
+                                if (!word.isEmpty()) {
+                                    text.addWord(word);
+                                }
                             }
                         }
                         break;
@@ -95,7 +104,6 @@ public class FileManager {
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error reading DOCX file: " + e.getMessage(), e);
             throw new IOException("Error reading DOCX file: " + e.getMessage(), e);
         }
     }
@@ -103,9 +111,17 @@ public class FileManager {
     private static String extractTextFromXml(String xmlContent) {
         StringBuilder text = new StringBuilder();
         boolean inText = false;
+        boolean inParagraph = false;
         int i = 0;
         while (i < xmlContent.length()) {
-            if (xmlContent.startsWith("<w:t", i)) {
+            if (xmlContent.startsWith("<w:p", i)) {
+                inParagraph = true;
+                i = xmlContent.indexOf(">", i) + 1;
+            } else if (xmlContent.startsWith("</w:p>", i)) {
+                inParagraph = false;
+                text.append("\n");
+                i += 6;
+            } else if (xmlContent.startsWith("<w:t", i)) {
                 inText = true;
                 i = xmlContent.indexOf(">", i) + 1;
             } else if (xmlContent.startsWith("</w:t>", i)) {
@@ -136,14 +152,26 @@ public class FileManager {
                 i++;
             }
         }
-        return text.toString().replaceAll("\\s+", " ").trim();
+        return text.toString().trim();
     }
 
     private static void loadTextFile(Context context, Uri uri, LinkedText text) throws IOException {
         try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
+            boolean isFirstLine = true;
             while ((line = reader.readLine()) != null) {
+                if (!isFirstLine) {
+                    // Add newline before each line except the first one
+                    text.addWord("\n");
+                }
+                isFirstLine = false;
+
+                // Handle empty lines
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
                 String[] words = line.split("\\s+");
                 for (String word : words) {
                     if (!word.isEmpty()) {

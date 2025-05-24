@@ -1,5 +1,28 @@
 <resources>
     <string name="app_name">SpeechHint</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hint_enter_new_word">Enter new word</string>
+    <string name="dialog_add_word_title">Add Word</string>
+    <string name="dialog_add_word_positive">Add</string>
+    <string name="dialog_add_word_negative">Cancel</string>
+    <string name="dialog_edit_word_title">Edit Word</string>
+    <string name="dialog_edit_word_positive">Save</string>
+    <string name="dialog_edit_word_negative">Cancel</string>
+    <string name="toast_microphone_permission_required">Microphone permission required</string>
+    <string name="toast_file_loaded_successfully">File loaded successfully</string>
+    <string name="toast_error_loading_file">Error loading file: %1$s</string>
+    <string name="toast_please_install_file_manager">Please install a file manager.</string>
+    <string name="toast_failed_to_get_file">Failed to get file</string>
+    <string name="loading_file">Loading file...</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_text_scale">Text Scale</string>
+    <string name="settings_use_voice_detection">Use Voice Detection</string>
+    <string name="settings_show_current_word">Show Current Word</string>
+    <string name="settings_show_buffer">Show Buffer</string>
+    <string name="settings_autoscroll_speed">Autoscroll Speed</string>
+    <string name="settings_text_scale_summary">Adjust the size of the text (10-50)</string>
+    <string name="settings_autoscroll_speed_summary">Adjust the speed of text scrolling (0-250)</string>
+    <string name="select_file">Select File</string>
+    <string name="settings_before_buffer_size">Before buffer size</string>
+    <string name="settings_after_buffer_size">After buffer size</string>
+    <string name="settings_use_autoscroll">Use Autoscroll</string>
 </resources>

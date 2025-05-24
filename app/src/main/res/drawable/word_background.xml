@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?attr/colorControlHighlight">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#F5F5F5" />
-            <corners android:radius="8dp" />
-        </shape>
-    </item>
-</ripple> 
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="6dp" />
+    <solid android:color="@color/word_background" />
+</shape> 
