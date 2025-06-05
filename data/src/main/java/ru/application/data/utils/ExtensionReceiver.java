@@ -53,33 +53,19 @@ public class ExtensionReceiver {
         return extension;
     }
 
-    public static String getExtensionFromUrl(InputStream is, String fileNameOrUrl) throws Exception { // TODO: make this stuff work
-        String mime = null;
-        if (fileNameOrUrl != null) {
-            mime = getMimeTypeFromUrl(fileNameOrUrl);
+    public static String getExtensionFromUri(InputStream inputStream,Uri uri) throws IOException {
+        if (inputStream == null) {throw new IllegalArgumentException("Input stream cannot be null");}
+        byte[] header = new byte[4];
+        int bytesRead = inputStream.read(header, 0, 4);
+        if (bytesRead >= 4) {
+            if ((header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04) ||  // PK\x03\x04
+                (header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x05 && header[3] == 0x06) ||  // PK\x05\x06
+                (header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x07 && header[3] == 0x08)) {  // PK\x07\x08
+                return "docx";
+            }
+            return "txt";
+        } else {
+            return "txt";
         }
-        if (mime == null) {
-            mime = guessMimeType(is);
-        }
-        return mime != null ? mime : "application/octet-stream";
-    }
-
-    public static String guessMimeType(InputStream is) throws IOException {
-        // Mark the stream to reset after reading
-        if (!is.markSupported()) {
-            is = new BufferedInputStream(is);
-        }
-        is.mark(1024);
-        String mime = URLConnection.guessContentTypeFromStream(is);
-        is.reset();
-        return mime;
-    }
-    public static String getMimeTypeFromUrl(String url) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
-        }
-        return type;
     }
 }
