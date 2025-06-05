@@ -30,6 +30,8 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(libs.poi.ooxml)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
 }

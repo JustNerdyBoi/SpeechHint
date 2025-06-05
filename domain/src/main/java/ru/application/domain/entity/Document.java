@@ -4,8 +4,6 @@ import java.util.LinkedList;
 
 public class Document {
     private LinkedList<Word> words;
-    private String title;
-
     public LinkedList<Word> getWords() {
         return words;
     }
@@ -13,12 +11,13 @@ public class Document {
     public void setWords(LinkedList<Word> words) {
         this.words = words;
     }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (words != null) {
+            for (Word word : words) {
+                sb.append(word.getText()).append(" ");
+            }
+        }
+        return sb.toString().trim();
     }
 }

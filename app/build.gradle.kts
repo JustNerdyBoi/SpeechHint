@@ -1,5 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.application")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -34,6 +35,9 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
+
+    implementation(libs.dagger.hilt.android)
+    annotationProcessor(libs.dagger.hilt.android.compiler)
 
     implementation(libs.appcompat)
     implementation(libs.material)
