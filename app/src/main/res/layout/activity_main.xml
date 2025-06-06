@@ -9,9 +9,9 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="ru.application.speechhint.ui.fragment.FileSelectFragment"
-        android:layout_width="265dp"
-        android:layout_height="285dp"
+        android:name="ru.application.speechhint.ui.fragment.TextViewerFragment"
+        android:layout_width="321dp"
+        android:layout_height="366dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

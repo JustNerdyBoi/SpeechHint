@@ -3,6 +3,7 @@ package ru.application.speechhint.viewmodel;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
@@ -14,7 +15,7 @@ import ru.application.domain.usecase.LoadDocumentUseCase;
 
 @HiltViewModel
 public class TeleprompterViewModel extends ViewModel {
-    Document document;
+    private final MutableLiveData<Document> documentLiveData = new MutableLiveData<>();
     private final LoadDocumentUseCase loadDocumentUseCase;
 
     @Inject
@@ -25,8 +26,7 @@ public class TeleprompterViewModel extends ViewModel {
     public void LoadLocalDocument(Uri uri) {
         new Thread(() -> {
             try {
-                document = loadDocumentUseCase.execute(DocumentSource.LOCAL, uri.toString());
-                Log.i("TEXT_LOCAL", document.toString());
+                getDocumentLiveData().postValue(loadDocumentUseCase.execute(DocumentSource.LOCAL, uri.toString()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -36,8 +36,7 @@ public class TeleprompterViewModel extends ViewModel {
     public void LoadGoogleDocument(String shortenedUrl) {
         new Thread(() -> {
             try {
-                document = loadDocumentUseCase.execute(DocumentSource.GOOGLE_DRIVE, shortenedUrl);
-                Log.i("TEXT_GOOGLE", document.toString());
+                getDocumentLiveData().postValue(loadDocumentUseCase.execute(DocumentSource.GOOGLE_DRIVE, shortenedUrl));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -48,12 +47,15 @@ public class TeleprompterViewModel extends ViewModel {
     public void LoadYandexDocument(String shortenedUrl) {
         new Thread(() -> {
             try {
-                document = loadDocumentUseCase.execute(DocumentSource.YANDEX_DRIVE, shortenedUrl);
-                Log.i("TEXT_YANDEX", document.toString());
+                getDocumentLiveData().postValue(loadDocumentUseCase.execute(DocumentSource.YANDEX_DRIVE, shortenedUrl));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
         }).start();
+    }
+
+    public MutableLiveData<Document> getDocumentLiveData() {
+        return documentLiveData;
     }
 }
