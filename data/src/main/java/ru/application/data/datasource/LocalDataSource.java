@@ -3,7 +3,6 @@ package ru.application.data.datasource;
 import android.content.Context;
 import android.net.Uri;
 
-import ru.application.data.utils.ExtensionReceiver;
 import ru.application.domain.entity.Document;
 import java.io.*;
 
@@ -18,8 +17,7 @@ public class LocalDataSource {
     public Document loadDocument(Uri uri) throws Exception {
         try {
             InputStream is = context.getContentResolver().openInputStream(uri);
-            String extension = ExtensionReceiver.getExtensionFromUri(context, uri);
-            return DocumentParser.parse(is, extension);
+            return DocumentParser.parse(is);
         } catch (Exception e) {
             throw new Exception(e);
         }

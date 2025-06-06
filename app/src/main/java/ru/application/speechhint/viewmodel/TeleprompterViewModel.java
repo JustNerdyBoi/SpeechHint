@@ -1,4 +1,4 @@
-package ru.application.viewmodel;
+package ru.application.speechhint.viewmodel;
 
 import android.net.Uri;
 import android.util.Log;

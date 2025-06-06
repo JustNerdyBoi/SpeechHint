@@ -1,4 +1,4 @@
-package ru.application.speechhint;
+package ru.application.speechhint.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,7 +19,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import ru.application.viewmodel.TeleprompterViewModel;
+import ru.application.speechhint.R;
+import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setupSelectFileButton();
 
 
-        viewModel.LoadYandexDocument("https://disk.yandex.ru/d/-AewE2ZkzyxOjw");        // TODO: test loading (44-85), remove after debugging and fixing file loading
+        viewModel.LoadGoogleDocument("https://drive.google.com/file/d/1fEPHToAuE2bA6eazeBQE2qkCzcO4PmRz/view?usp=drive_link");        // TODO: test loading (44-85), remove after debugging and fixing file loading
 
     }
 

@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import ru.application.data.utils.ExtensionReceiver;
 import ru.application.domain.entity.Document;
 
 public class YandexDriveDataSource {
@@ -32,9 +31,7 @@ public class YandexDriveDataSource {
 
         // Step 2: Open InputStream to the file
         InputStream is = new URL(downloadUrl).openStream();
-        String extension = ExtensionReceiver.getExtensionFromUrl(is, downloadUrl);
 
-
-        return DocumentParser.parse(is, extension);
+        return DocumentParser.parse(is);
     }
 }

@@ -1,5 +1,6 @@
 package ru.application.data.datasource;
 
+import ru.application.data.utils.ExtensionReceiver;
 import ru.application.domain.entity.Document;
 import ru.application.domain.entity.Word;
 
@@ -8,13 +9,24 @@ import java.util.LinkedList;
 import org.apache.poi.xwpf.usermodel.*;
 
 public class DocumentParser {
+    public static Document parse(InputStream is) throws IOException {
 
-    public static Document parse(InputStream is, String extension) throws IOException {
+        // Считываем все данные в память чтобы создать копию InputStream для определения расширения
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            baos.write(buffer, 0, len);
+        }
+        byte[] data = baos.toByteArray();
+
+        String extension = ExtensionReceiver.getExtensionFromInputStream(new ByteArrayInputStream(data));
+
         switch (extension) {
             case "txt":
-                return parseTxt(is);
+                return parseTxt(new ByteArrayInputStream(data));
             case "docx":
-                return parseDocx(is);
+                return parseDocx(new ByteArrayInputStream(data));
             default:
                 throw new IllegalArgumentException("Unsupported file format: " + extension);
         }
