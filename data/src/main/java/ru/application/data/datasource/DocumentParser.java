@@ -103,23 +103,18 @@ public class DocumentParser {
         LinkedList<Word> words = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String line;
-        int pos = 0;
         boolean firstLine = true;
         while ((line = reader.readLine()) != null) {
             if (!firstLine) {
                 // Add \n as a Word at the end of the previous paragraph (line)
-                Word newline = new Word();
-                newline.setText("\n");
-                newline.setPosition(pos++);
+                Word newline = new Word("\n");
                 words.add(newline);
             }
             firstLine = false;
 
             for (String wordStr : line.split("\\s+")) {
                 if (!wordStr.isEmpty()) {
-                    Word word = new Word();
-                    word.setText(wordStr);
-                    word.setPosition(pos++);
+                    Word word = new Word(wordStr);
                     words.add(word);
                 }
             }
@@ -134,14 +129,11 @@ public class DocumentParser {
     public static Document parseDocx(InputStream is) throws IOException {
         LinkedList<Word> words = new LinkedList<>();
         XWPFDocument docx = new XWPFDocument(is);
-        int pos = 0;
         boolean firstPara = true;
         for (XWPFParagraph para : docx.getParagraphs()) {
             if (!firstPara) {
                 // Add \n as a Word at the end of the previous paragraph
-                Word newline = new Word();
-                newline.setText("\n");
-                newline.setPosition(pos++);
+                Word newline = new Word("\n");
                 words.add(newline);
             }
             firstPara = false;
@@ -149,9 +141,7 @@ public class DocumentParser {
             String text = para.getText();
             for (String wordStr : text.split("\\s+")) {
                 if (!wordStr.isEmpty()) {
-                    Word word = new Word();
-                    word.setText(wordStr);
-                    word.setPosition(pos++);
+                    Word word = new Word(wordStr);
                     words.add(word);
                 }
             }

@@ -1,16 +1,9 @@
 package ru.application.speechhint.ui.activity;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -20,6 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import ru.application.speechhint.R;
+import ru.application.speechhint.ui.fragment.FileSelectFragment;
+import ru.application.speechhint.ui.fragment.TextViewerFragment;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 @AndroidEntryPoint
@@ -41,5 +36,20 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFrameLayout, new FileSelectFragment())
+                .commit();
+
+        viewModel.getDocumentLiveData().observe(this, document -> {
+            if (document != null && !(getSupportFragmentManager().findFragmentById(R.id.mainFrameLayout) instanceof TextViewerFragment)){
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFrameLayout, new TextViewerFragment())
+                        .commit();
+            }
+        });
+
     }
 }
