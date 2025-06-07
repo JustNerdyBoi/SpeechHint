@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import ru.application.domain.entity.Word;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.adapter.WordAdapter;
+import ru.application.speechhint.ui.animator.AutoScroller;
 import ru.application.speechhint.ui.layouts.WordWallLayoutManager;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
@@ -33,6 +34,7 @@ public class TextViewerFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+        AutoScroller scroller = new AutoScroller(recyclerView);
 
         viewModel.getDocumentLiveData().observe(getViewLifecycleOwner(), document -> {
             WordAdapter wordAdapter = new WordAdapter(document, new WordAdapter.OnWordClickListener() {
