@@ -1,10 +1,14 @@
 <resources>
     <string name="app_name">SpeechHint</string>
     <string name="select_file">Select File</string>
-    <string name="load_local_file">Загрузить локальный файл</string>
     <string name="load_google_file">Google Drive</string>
-    <string name="load_yandex_file">Яндекс.Диск</string>
-    <string name="enter_google_link">Введите ссылку на Google Drive</string>
-    <string name="enter_yandex_link">Введите ссылку на Яндекс.Диск</string>
-    <string name="link_empty">Ссылка не может быть пустой</string>
+    <string name="enter_google_link">Enter link to Google Drive</string>
+    <string name="enter_yandex_link">Enter link to Yandex.Disk</string>
+    <string name="link_empty">Link can\'t be empty</string>
+    <string name="load_local_file">Load local file</string>
+    <string name="load_yandex_file">Yandex.Disk</string>
+    <string name="edit_word">Edit word</string>
+    <string name="delete_word">Delete word</string>
+    <string name="add_word_before">Add word before</string>
+    <string name="add_word_after">Add word after</string>
 </resources>

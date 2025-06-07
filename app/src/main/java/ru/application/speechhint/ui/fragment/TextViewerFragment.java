@@ -1,9 +1,13 @@
 package ru.application.speechhint.ui.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,13 +46,65 @@ public class TextViewerFragment extends Fragment {
                 public void onWordClick(Word word, int position) {
                     // TODO: Реагировать на клик
                 }
+
                 @Override
-                public void onWordLongClick(Word word, int position) {
-                    // TODO: Реагировать на долгий клик
+                public void onWordLongClick(Word word, int position, View anchor) {
+                    PopupMenu popup = new PopupMenu(requireContext(), anchor);
+                    popup.getMenu().add(Menu.NONE, 1, 1, R.string.edit_word);
+                    popup.getMenu().add(Menu.NONE, 2, 2, R.string.delete_word);
+                    popup.getMenu().add(Menu.NONE, 3, 3, R.string.add_word_before);
+                    popup.getMenu().add(Menu.NONE, 4, 4, R.string.add_word_after);
+
+                    popup.setOnMenuItemClickListener(item -> {
+                        switch (item.getItemId()) {
+                            case 1:
+                                showInputDialog(requireContext().getString(R.string.edit_word), word.getText(), newText -> {
+                                    viewModel.editWord(position, newText);
+                                });
+                                return true;
+                            case 2:
+                                viewModel.removeWord(position);
+                                return true;
+                            case 3:
+                                showInputDialog(requireContext().getString(R.string.add_word_before), "", newText -> {
+                                    viewModel.addWord(position, newText);
+                                });
+                                return true;
+                            case 4:
+                                showInputDialog(requireContext().getString(R.string.add_word_after), "", newText -> {
+                                    viewModel.addWord(position + 1, newText);
+                                });
+                                return true;
+                        }
+                        return false;
+                    });
+                    popup.show();
                 }
             });
             recyclerView.setLayoutManager(new WordWallLayoutManager());
             recyclerView.setAdapter(wordAdapter);
         });
     }
+
+    private void showInputDialog(String title, String initialText, OnTextEnteredListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(title);
+
+        final EditText input = new EditText(requireContext());
+        input.setText(initialText);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String newText = input.getText().toString();
+            listener.onTextEntered(newText);
+        });
+        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    public interface OnTextEnteredListener {
+        void onTextEntered(String text);
+    }
+
 }

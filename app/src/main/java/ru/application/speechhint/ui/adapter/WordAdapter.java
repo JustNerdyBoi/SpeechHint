@@ -58,7 +58,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                     if (listener != null) listener.onWordClick(word, position);
                 });
                 textView.setOnLongClickListener(v -> {
-                    if (listener != null) listener.onWordLongClick(word, position);
+                    if (listener != null) listener.onWordLongClick(word, position, v);
                     return true;
                 });
             }
@@ -67,6 +67,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     public interface OnWordClickListener {
         void onWordClick(Word word, int position);
-        void onWordLongClick(Word word, int position);
+        void onWordLongClick(Word word, int position, View anchor);
     }
 }
