@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import ru.application.speechhint.R;
+import ru.application.speechhint.ui.fragment.FileSelectFragment;
+import ru.application.speechhint.ui.fragment.TextViewerFragment;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 @AndroidEntryPoint
@@ -35,6 +37,19 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        viewModel.LoadYandexDocument("https://disk.yandex.ru/d/-AewE2ZkzyxOjw");
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFrameLayout, new FileSelectFragment())
+                .commit();
+
+        viewModel.getDocumentLiveData().observe(this, document -> {
+            if (document != null && !(getSupportFragmentManager().findFragmentById(R.id.mainFrameLayout) instanceof TextViewerFragment)){
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainFrameLayout, new TextViewerFragment())
+                        .commit();
+            }
+        });
+
     }
 }

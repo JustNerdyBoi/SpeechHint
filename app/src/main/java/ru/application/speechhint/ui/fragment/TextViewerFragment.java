@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import ru.application.domain.entity.Document;
 import ru.application.domain.entity.Word;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.adapter.WordAdapter;
@@ -24,6 +25,9 @@ import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 public class TextViewerFragment extends Fragment {
     private TeleprompterViewModel viewModel;
+
+    RecyclerView recyclerView;
+    AutoScroller scroller;
 
     @Nullable
     @Override
@@ -37,53 +41,65 @@ public class TextViewerFragment extends Fragment {
 
         viewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
 
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
-        AutoScroller scroller = new AutoScroller(recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        scroller = new AutoScroller(recyclerView);
 
         viewModel.getDocumentLiveData().observe(getViewLifecycleOwner(), document -> {
-            WordAdapter wordAdapter = new WordAdapter(document, new WordAdapter.OnWordClickListener() {
-                @Override
-                public void onWordClick(Word word, int position) {
-                    // TODO: Реагировать на клик
-                }
+            if (document == null) {
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .remove(this)
+                        .commit();
 
-                @Override
-                public void onWordLongClick(Word word, int position, View anchor) {
-                    PopupMenu popup = new PopupMenu(requireContext(), anchor);
-                    popup.getMenu().add(Menu.NONE, 1, 1, R.string.edit_word);
-                    popup.getMenu().add(Menu.NONE, 2, 2, R.string.delete_word);
-                    popup.getMenu().add(Menu.NONE, 3, 3, R.string.add_word_before);
-                    popup.getMenu().add(Menu.NONE, 4, 4, R.string.add_word_after);
-
-                    popup.setOnMenuItemClickListener(item -> {
-                        switch (item.getItemId()) {
-                            case 1:
-                                showInputDialog(requireContext().getString(R.string.edit_word), word.getText(), newText -> {
-                                    viewModel.editWord(position, newText);
-                                });
-                                return true;
-                            case 2:
-                                viewModel.removeWord(position);
-                                return true;
-                            case 3:
-                                showInputDialog(requireContext().getString(R.string.add_word_before), "", newText -> {
-                                    viewModel.addWord(position, newText);
-                                });
-                                return true;
-                            case 4:
-                                showInputDialog(requireContext().getString(R.string.add_word_after), "", newText -> {
-                                    viewModel.addWord(position + 1, newText);
-                                });
-                                return true;
-                        }
-                        return false;
-                    });
-                    popup.show();
-                }
-            });
-            recyclerView.setLayoutManager(new WordWallLayoutManager());
-            recyclerView.setAdapter(wordAdapter);
+            } else {
+                setupRecyclerView(document);
+            }
         });
+    }
+
+    private void setupRecyclerView(Document document) {
+        WordAdapter wordAdapter = new WordAdapter(document, new WordAdapter.OnWordClickListener() {
+            @Override
+            public void onWordClick(Word word, int position) {
+                // TODO: Реагировать на клик
+            }
+
+            @Override
+            public void onWordLongClick(Word word, int position, View anchor) {
+                PopupMenu popup = new PopupMenu(requireContext(), anchor);
+                popup.getMenu().add(Menu.NONE, 1, 1, R.string.edit_word);
+                popup.getMenu().add(Menu.NONE, 2, 2, R.string.delete_word);
+                popup.getMenu().add(Menu.NONE, 3, 3, R.string.add_word_before);
+                popup.getMenu().add(Menu.NONE, 4, 4, R.string.add_word_after);
+
+                popup.setOnMenuItemClickListener(item -> {
+                    switch (item.getItemId()) {
+                        case 1:
+                            showInputDialog(requireContext().getString(R.string.edit_word), word.getText(), newText -> {
+                                viewModel.editWord(position, newText);
+                            });
+                            return true;
+                        case 2:
+                            viewModel.removeWord(position);
+                            return true;
+                        case 3:
+                            showInputDialog(requireContext().getString(R.string.add_word_before), "", newText -> {
+                                viewModel.addWord(position, newText);
+                            });
+                            return true;
+                        case 4:
+                            showInputDialog(requireContext().getString(R.string.add_word_after), "", newText -> {
+                                viewModel.addWord(position + 1, newText);
+                            });
+                            return true;
+                    }
+                    return false;
+                });
+                popup.show();
+            }
+        });
+        recyclerView.setLayoutManager(new WordWallLayoutManager());
+        recyclerView.setAdapter(wordAdapter);
     }
 
     private void showInputDialog(String title, String initialText, OnTextEnteredListener listener) {
