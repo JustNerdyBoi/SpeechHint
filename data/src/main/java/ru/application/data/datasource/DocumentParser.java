@@ -1,5 +1,7 @@
 package ru.application.data.datasource;
 
+import android.util.Log;
+
 import ru.application.data.utils.ExtensionReceiver;
 import ru.application.domain.entity.Document;
 import ru.application.domain.entity.Word;
@@ -24,6 +26,7 @@ public class DocumentParser {
         byte[] data = baos.toByteArray();
 
         String extension = ExtensionReceiver.getExtensionFromInputStream(new ByteArrayInputStream(data));
+        Log.i("DocumentParser", "Detected " + extension + " filetype. Starting pacing");
 
         switch (extension) {
             case "txt":
@@ -41,7 +44,6 @@ public class DocumentParser {
         LinkedList<Word> words = new LinkedList<>();
         ZipInputStream zipInputStream = new ZipInputStream(is);
         ZipEntry entry;
-        int pos = 0;
         boolean firstPara = true;
 
         try {
@@ -66,9 +68,7 @@ public class DocumentParser {
                         NodeList textNodes = xmlDoc.getElementsByTagName("text:p"); // Paragraphs in ODT
                         for (int i = 0; i < textNodes.getLength(); i++) {
                             if (!firstPara) {
-                                Word newline = new Word();
-                                newline.setText("\n");
-                                newline.setPosition(pos++);
+                                Word newline = new Word("\n");
                                 words.add(newline);
                             }
                             firstPara = false;
@@ -76,9 +76,7 @@ public class DocumentParser {
                             String paraText = textNodes.item(i).getTextContent();
                             for (String wordStr : paraText.split("\\s+")) {
                                 if (!wordStr.isEmpty()) {
-                                    Word word = new Word();
-                                    word.setText(wordStr);
-                                    word.setPosition(pos++);
+                                    Word word = new Word(wordStr);
                                     words.add(word);
                                 }
                             }
@@ -126,7 +124,7 @@ public class DocumentParser {
     }
 
     // For DOCX: treat each paragraph, insert \n as a Word after each paragraph (even if empty)
-    public static Document parseDocx(InputStream is) throws IOException {
+    public static Document parseDocx(InputStream is) throws IOException { // TODO: sometimes skips '\n' (compare to loading txt)
         LinkedList<Word> words = new LinkedList<>();
         XWPFDocument docx = new XWPFDocument(is);
         boolean firstPara = true;

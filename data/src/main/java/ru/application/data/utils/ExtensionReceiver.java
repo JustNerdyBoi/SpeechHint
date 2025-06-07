@@ -6,7 +6,7 @@ import java.io.InputStream;
 public class ExtensionReceiver {
     private static final int HEADER_SIZE = 64;
     
-    public static String getExtensionFromInputStream(InputStream inputStream) throws IOException {
+    public static String getExtensionFromInputStream(InputStream inputStream) throws IOException {  // TODO: FIX THIS F*KING THING
         if (inputStream == null) {
             throw new IllegalArgumentException("Input stream cannot be null");
         }
@@ -27,7 +27,7 @@ public class ExtensionReceiver {
                ((header[2] == 0x03 && header[3] == 0x04) ||
                (header[2] == 0x01 && header[3] == 0x02) ||
                (header[2] == 0x05 && header[3] == 0x06) ||
-               (header[2] == 0x07 && header[3] == 0x08));
+               (header[2] == 0x07 && header[3] == 0x08)));
     }
     
     private static boolean isOdtFile(byte[] header, int bytesRead) {

@@ -2,6 +2,7 @@ package ru.application.speechhint.ui.fragment;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -52,6 +53,7 @@ public class TextViewerFragment extends Fragment {
                         .commit();
 
             } else {
+                Log.i("TextViewerFragment", "Deploying document with " + document.getWords().size() + " words.");
                 setupRecyclerView(document);
             }
         });
