@@ -10,6 +10,9 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
     private int totalHeight = 0;      // Общая высота контента
     private int scrollOffsetY = 0;    // Текущее смещение
 
+    private static final double EXTRA_LINE_SPACE = 1.25;
+    private static final double LINE_SPACE = 0.8;
+
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
         return new RecyclerView.LayoutParams(
@@ -57,7 +60,6 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
         int itemCount = getItemCount();
 
         totalHeight = 0;
-        boolean firstLine = true;
 
         for (int i = 0; i < itemCount; i++) {
             View view = recycler.getViewForPosition(i);
@@ -70,22 +72,21 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
 
             // Принудительный перенос строки, если слово == "\n"
             if (view.getVisibility() == View.GONE) {
-                if (!firstLine) {
-                    curTop += maxHeightInLine;
-                    totalHeight += maxHeightInLine;
-                } else {
-                    firstLine = false;
+                // Переносим вниз только если есть элементы в текущей строке
+                if (maxHeightInLine != 0) {
+                    curTop += (int) (maxHeightInLine * EXTRA_LINE_SPACE);
+                    totalHeight += (int) (maxHeightInLine * EXTRA_LINE_SPACE);
+                    maxHeightInLine = 0;
                 }
                 curLeft = getPaddingLeft();
-                maxHeightInLine = 0;
                 continue;
             }
 
             // Если не помещается — перенос строки
             if (curLeft + w > width - getPaddingRight()) {
                 curLeft = getPaddingLeft();
-                curTop += maxHeightInLine;
-                totalHeight += maxHeightInLine;
+                curTop += (int) (maxHeightInLine * LINE_SPACE);
+                totalHeight += (int) (maxHeightInLine * LINE_SPACE);
                 maxHeightInLine = 0;
             }
 
@@ -94,14 +95,16 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
             curLeft += w;
             maxHeightInLine = Math.max(maxHeightInLine, h);
         }
-        // Добавляем высоту последней строки
-        totalHeight += maxHeightInLine;
+        // Добавляем высоту последней строки, если она была
+        if (maxHeightInLine != 0) {
+            totalHeight += maxHeightInLine;
+        }
 
-        // Если контент меньше высоты экрана — не даём скроллить вниз
         if (totalHeight < getHeight()) {
             scrollOffsetY = 0;
         }
     }
+
 
     @Override
     public void scrollToPosition(int position) { // TODO: Заглушка
