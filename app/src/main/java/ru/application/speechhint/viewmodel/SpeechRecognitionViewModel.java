@@ -13,14 +13,14 @@ import ru.application.domain.repository.SpeechRecognitionRepository;
 import ru.application.domain.usecase.SpeechRecognitionUseCase;
 
 @HiltViewModel
-public class SpeechViewModel extends ViewModel {
+public class SpeechRecognitionViewModel extends ViewModel {
 
     private final SpeechRecognitionUseCase speechRecognitionUseCase;
 
     private final MutableLiveData<String> recognizedWord = new MutableLiveData<>();
 
     @Inject
-    public SpeechViewModel(SpeechRecognitionUseCase speechRecognitionUseCase) {
+    public SpeechRecognitionViewModel(SpeechRecognitionUseCase speechRecognitionUseCase) {
         this.speechRecognitionUseCase = speechRecognitionUseCase;
     }
 

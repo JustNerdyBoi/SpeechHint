@@ -1,13 +1,9 @@
 package ru.application.speechhint.ui.activity;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -18,14 +14,12 @@ import dagger.hilt.android.AndroidEntryPoint;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.fragment.FileSelectFragment;
 import ru.application.speechhint.ui.fragment.TextViewerFragment;
-import ru.application.speechhint.viewmodel.SpeechViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private TeleprompterViewModel teleprompterViewModel;
-    private SpeechViewModel speechViewModel;
 
 
     @Override
@@ -33,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         teleprompterViewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
-        speechViewModel = new ViewModelProvider(this).get(SpeechViewModel.class);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -44,10 +37,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { // TODO: implement voice permission request
 //            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);}
-
-        speechViewModel.startSpeechRecognition();
 
         getSupportFragmentManager()
                 .beginTransaction()
