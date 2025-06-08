@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ExtensionReceiver {
-    private static final int HEADER_SIZE = 64;
+    private static final int HEADER_SIZE = 256;
     
     public static String getExtensionFromInputStream(InputStream inputStream) throws IOException {  // TODO: FIX THIS F*KING THING
         if (inputStream == null) {
