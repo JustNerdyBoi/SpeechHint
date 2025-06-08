@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent;
 import javax.inject.Singleton;
 
 import ru.application.data.datasource.LocalDataSource;
+import ru.application.data.datasource.PreferencesDataSource;
 import ru.application.data.datasource.ServerDataSource;
 import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
@@ -40,5 +41,11 @@ public class DataSourceModule {
     @Singleton
     public YandexDriveDataSource provideYandexDriveDataSource() {
         return new YandexDriveDataSource();
+    }
+
+    @Provides
+    @Singleton
+    public PreferencesDataSource providePreferenceDataSource(@ApplicationContext Context context){
+        return new PreferencesDataSource(context);
     }
 }

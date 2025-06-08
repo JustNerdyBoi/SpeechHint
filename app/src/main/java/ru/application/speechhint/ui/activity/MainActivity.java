@@ -11,15 +11,18 @@ import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import ru.application.domain.entity.Settings;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.fragment.FileSelectFragment;
 import ru.application.speechhint.ui.fragment.TextViewerFragment;
+import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private TeleprompterViewModel teleprompterViewModel;
+    private SettingsViewModel settingsViewModel;
 
 
     @Override
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         teleprompterViewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
+        settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -37,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { // TODO: implement voice permission request
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { // TODO: implement proper voice permission request
 //            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);}
 
         getSupportFragmentManager()
