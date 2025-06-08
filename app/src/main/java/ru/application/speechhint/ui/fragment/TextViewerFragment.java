@@ -125,4 +125,9 @@ public class TextViewerFragment extends Fragment {
         void onTextEntered(String text);
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+    }
+
 }

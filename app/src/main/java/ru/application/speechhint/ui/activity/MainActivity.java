@@ -19,14 +19,14 @@ import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
-    private TeleprompterViewModel viewModel;
+    private TeleprompterViewModel teleprompterViewModel;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
+        teleprompterViewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -36,12 +36,16 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { // TODO: implement voice permission request
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);}
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.mainFrameLayout, new FileSelectFragment())
                 .commit();
 
-        viewModel.getDocumentLiveData().observe(this, document -> {
+        teleprompterViewModel.getDocumentLiveData().observe(this, document -> {
             if (document != null && !(getSupportFragmentManager().findFragmentById(R.id.mainFrameLayout) instanceof TextViewerFragment)){
                 getSupportFragmentManager()
                         .beginTransaction()

@@ -1,15 +1,22 @@
 package ru.application.speechhint.di;
 
+import android.content.Context;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.LocalDataSource;
 import ru.application.data.datasource.ServerDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
 import ru.application.data.repository.DocumentRepositoryImpl;
+import ru.application.data.repository.SpeechRecognitionRepositoryImpl;
 import ru.application.domain.repository.DocumentRepository;
+import ru.application.domain.repository.SpeechRecognitionRepository;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -28,5 +35,11 @@ public class RepositoryModule {
                 yandexDriveDataSource,
                 serverDataSource
         );
+    }
+
+    @Provides
+    @Singleton
+    public SpeechRecognitionRepository provideSpeechRecognitionRepository(@ApplicationContext Context context) {
+        return new SpeechRecognitionRepositoryImpl(context);
     }
 }

@@ -16,6 +16,7 @@ import ru.application.domain.usecase.LoadDocumentUseCase;
 @HiltViewModel
 public class TeleprompterViewModel extends ViewModel {
     private final MutableLiveData<Document> documentLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> currentPositionLiveData = new MutableLiveData<>(0);
     private final LoadDocumentUseCase loadDocumentUseCase;
 
     @Inject
