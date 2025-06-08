@@ -11,6 +11,9 @@ import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.poi.xwpf.usermodel.*;
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.text.Paragraph;
+import org.odftoolkit.simple.text.Text;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.NodeList;
@@ -42,55 +45,29 @@ public class DocumentParser {
 
     public static Document parseOdt(InputStream is) throws IOException {
         LinkedList<Word> words = new LinkedList<>();
-        ZipInputStream zipInputStream = new ZipInputStream(is);
-        ZipEntry entry;
-        boolean firstPara = true;
 
         try {
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                if (entry.getName().equals("content.xml")) {
-                    // Парсим content.xml из ODT
-                    StringBuilder contentBuilder = new StringBuilder();
-                    byte[] contentBuffer = new byte[1024];
-                    int contentLen;
-                    while ((contentLen = zipInputStream.read(contentBuffer)) > 0) {
-                        contentBuilder.append(new String(contentBuffer, 0, contentLen));
-                    }
-
-                    // Парсим XML для извлечения текста
-                    String xmlContent = contentBuilder.toString();
-                    try {
-                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder builder = factory.newDocumentBuilder();
-                        org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(xmlContent.getBytes()));
-
-                        // Получаем все текстовые узлы
-                        NodeList textNodes = xmlDoc.getElementsByTagName("text:p"); // Paragraphs in ODT
-                        for (int i = 0; i < textNodes.getLength(); i++) {
-                            if (!firstPara) {
-                                Word newline = new Word("\n");
-                                words.add(newline);
-                            }
-                            firstPara = false;
-
-                            String paraText = textNodes.item(i).getTextContent();
-                            for (String wordStr : paraText.split("\\s+")) {
-                                if (!wordStr.isEmpty()) {
-                                    Word word = new Word(wordStr);
-                                    words.add(word);
-                                }
-                            }
+            TextDocument document = TextDocument.loadDocument(is);
+            List<Paragraph> paragraphs = document.getParagraphs();
+            boolean firstPara = true;
+            for (Paragraph paragraph : paragraphs) {
+                if (!firstPara) {
+                    words.add(new Word("\n"));
+                }
+                firstPara = false;
+                List<Text> texts = paragraph.getTexts();
+                for (Text text : texts) {
+                    for (String wordStr : text.getStringValue().split("\\s+")) {
+                        if (!wordStr.isEmpty()) {
+                            words.add(new Word(wordStr));
                         }
-                    } catch (Exception e) {
-                        throw new IOException("Failed to parse ODT content", e);
                     }
                 }
-                zipInputStream.closeEntry();
             }
-        } finally {
-            zipInputStream.close();
-        }
 
+        } catch (Exception e) {
+            throw new IOException("Ошибка при разборе ODT файла", e);
+        }
         Document doc = new Document();
         doc.setWords(words);
         return doc;
