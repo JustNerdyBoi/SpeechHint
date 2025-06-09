@@ -22,10 +22,14 @@ import ru.application.speechhint.R;
 import ru.application.speechhint.ui.adapter.WordAdapter;
 import ru.application.speechhint.ui.animator.AutoScroller;
 import ru.application.speechhint.ui.layouts.WordWallLayoutManager;
+import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 public class TextViewerFragment extends Fragment {
-    private TeleprompterViewModel viewModel;
+    private TeleprompterViewModel teleprompterViewModel;
+    private SettingsViewModel settingsViewModel;
+    private Document document;
+    private int textScale;
 
     RecyclerView recyclerView;
     AutoScroller scroller;
@@ -40,27 +44,65 @@ public class TextViewerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
+        teleprompterViewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
+        settingsViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
+
+        document = teleprompterViewModel.getDocumentLiveData().getValue();
+        textScale = settingsViewModel.getSettingsLiveData().getValue().getUiConfig().getTextScale();
 
         recyclerView = view.findViewById(R.id.recyclerView);
         scroller = new AutoScroller(recyclerView);
 
-        viewModel.getDocumentLiveData().observe(getViewLifecycleOwner(), document -> {
-            if (document == null) {
+        setupListeners();
+        setupRecyclerView(document, textScale);
+    }
+
+    private void setupListeners() {
+        teleprompterViewModel.getDocumentLiveData().observe(getViewLifecycleOwner(), newDocument -> {
+            if (newDocument == null) {
                 getParentFragmentManager()
                         .beginTransaction()
                         .remove(this)
                         .commit();
-
             } else {
-                Log.i("TextViewerFragment", "Deploying document with " + document.getWords().size() + " words.");
-                setupRecyclerView(document);
+                document = newDocument;
+                setupRecyclerView(newDocument, textScale);
+            }
+        });
+
+        settingsViewModel.getSettingsLiveData().observe(getViewLifecycleOwner(), settings -> {
+            if (textScale != settings.getUiConfig().getTextScale()) {
+                setupRecyclerView(document, settings.getUiConfig().getTextScale());
+            }
+            textScale = settings.getUiConfig().getTextScale();
+
+            if (settings.getUiConfig().isCurrentStringHighlight()) {
+                // TODO: реализовать подсветку центральной строки
+            }
+
+            if (settings.getUiConfig().isMirrorText()){
+                recyclerView.setScaleY(-1);
+            } else {
+                recyclerView.setScaleY(1);
+            }
+
+            if (settings.getScrollConfig().isAutoScroll()){
+                if (settings.getSttConfig().isSttEnabled()){
+                    scroller.stopScrolling();
+                    // TODO: реализовать отслеживание
+                }
+                else {
+                    scroller.startScrolling(settings.getScrollConfig().getSpeed());
+                }
+            } else {
+                scroller.stopScrolling();
             }
         });
     }
 
-    private void setupRecyclerView(Document document) {
-        WordAdapter wordAdapter = new WordAdapter(document, new WordAdapter.OnWordClickListener() {
+    private void setupRecyclerView(Document document, int textScale) {
+        Log.i("TextViewerFragment", "Deploying new document with " + document.getWords().size() + " words.");
+        WordAdapter wordAdapter = new WordAdapter(document, textScale, new WordAdapter.OnWordClickListener() {
             @Override
             public void onWordClick(Word word, int position) {
                 // TODO: Реагировать на клик
@@ -78,20 +120,20 @@ public class TextViewerFragment extends Fragment {
                     switch (item.getItemId()) {
                         case 1:
                             showInputDialog(requireContext().getString(R.string.edit_word), word.getText(), newText -> {
-                                viewModel.editWord(position, newText);
+                                teleprompterViewModel.editWord(position, newText);
                             });
                             return true;
                         case 2:
-                            viewModel.removeWord(position);
+                            teleprompterViewModel.removeWord(position);
                             return true;
                         case 3:
                             showInputDialog(requireContext().getString(R.string.add_word_before), "", newText -> {
-                                viewModel.addWord(position, newText);
+                                teleprompterViewModel.addWord(position, newText);
                             });
                             return true;
                         case 4:
                             showInputDialog(requireContext().getString(R.string.add_word_after), "", newText -> {
-                                viewModel.addWord(position + 1, newText);
+                                teleprompterViewModel.addWord(position + 1, newText);
                             });
                             return true;
                     }
@@ -126,7 +168,7 @@ public class TextViewerFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
     }
 

@@ -23,4 +23,5 @@
     <string name="settings_use_voice_detection">Enable Voice Detection</string>
     <string name="settings_before_buffer_size">Before Buffer Size</string>
     <string name="settings_after_buffer_size">After Buffer Size</string>
+    <string name="settings_mirror_text">Mirror text</string>
 </resources>

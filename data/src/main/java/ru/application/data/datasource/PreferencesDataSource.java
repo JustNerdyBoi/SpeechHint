@@ -19,7 +19,11 @@ public class PreferencesDataSource {
     public Settings getSettings() {
         String json = sharedPreferences.getString(KEY_SETTINGS, null);
         if (json == null) return Settings.defaultSettings();
-        return gson.fromJson(json, Settings.class);
+        try {
+            return gson.fromJson(json, Settings.class);
+        } catch (Exception e){
+            return Settings.defaultSettings();
+        }
     }
 
     public void saveSettings(Settings settings) {

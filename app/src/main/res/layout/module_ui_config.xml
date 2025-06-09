@@ -65,4 +65,10 @@
         android:layout_height="wrap_content"
         android:text="@string/settings_show_current_word" />
 
+    <Switch
+        android:id="@+id/mirrorTextSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_mirror_text" />
+
 </LinearLayout>

@@ -1,20 +1,17 @@
 package ru.application.speechhint.ui.animator;
 
 import android.animation.ValueAnimator;
-import android.os.Handler;
-import android.os.Looper;
+import android.view.Choreographer;
 import android.view.animation.LinearInterpolator;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AutoScroller {
     private final RecyclerView recyclerView;
-    private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean running = false;
-
     private float currentSpeedPxPerSec = 0f;
     private float targetSpeedPxPerSec = 0f;
-
-    private long lastTickTime = 0L;
+    private float scrollRemainder = 0f;
+    private long lastFrameTimeNanos = 0L;
     private ValueAnimator speedAnimator;
 
     public AutoScroller(RecyclerView recyclerView) {
@@ -26,16 +23,18 @@ public class AutoScroller {
         stopScrolling();
         this.currentSpeedPxPerSec = speedPxPerSecond;
         this.targetSpeedPxPerSec = speedPxPerSecond;
+        scrollRemainder = 0f;
         running = true;
-        lastTickTime = System.currentTimeMillis();
-        handler.post(scrollRunnable);
+        lastFrameTimeNanos = 0L; // сбросить, чтобы корректно вычислить dt на первом кадре
+        Choreographer.getInstance().postFrameCallback(frameCallback);
     }
 
     // Остановка
     public void stopScrolling() {
         running = false;
-        handler.removeCallbacks(scrollRunnable);
+        Choreographer.getInstance().removeFrameCallback(frameCallback);
         if (speedAnimator != null) speedAnimator.cancel();
+        scrollRemainder = 0f;
     }
 
     // Плавное изменение скорости
@@ -56,21 +55,26 @@ public class AutoScroller {
         speedAnimator.start();
     }
 
-    // Равномерная прокрутка с текущей скоростью
-    private final Runnable scrollRunnable = new Runnable() {
+    private final Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
         @Override
-        public void run() {
+        public void doFrame(long frameTimeNanos) {
             if (!running) return;
-            long now = System.currentTimeMillis();
-            float dt = (now - lastTickTime) / 1000f;
-            lastTickTime = now;
 
-            int dy = (int) (currentSpeedPxPerSec * dt);
+            if (lastFrameTimeNanos == 0L) {
+                lastFrameTimeNanos = frameTimeNanos;
+            }
+            float dt = (frameTimeNanos - lastFrameTimeNanos) / 1_000_000_000f; // наносекунды -> секунды
+            lastFrameTimeNanos = frameTimeNanos;
+
+            float delta = currentSpeedPxPerSec * dt + scrollRemainder;
+            int dy = (int) delta;
+            scrollRemainder = delta - dy;
+
             if (dy != 0) {
                 recyclerView.scrollBy(0, dy);
             }
 
-            handler.postDelayed(this, 16);
+            Choreographer.getInstance().postFrameCallback(this);
         }
     };
 }

@@ -30,6 +30,7 @@ public class SettingsFragment extends Fragment {
     private TextView textScaleValue;
     private RadioGroup themeRadioGroup;
     private Switch currentStringHighlightSwitch;
+    private Switch mirrorTextSwitch;
 
     // ScrollConfig
     private Switch autoScrollSwitch;
@@ -60,6 +61,7 @@ public class SettingsFragment extends Fragment {
         textScaleValue = root.findViewById(R.id.textScaleValue);
         themeRadioGroup = root.findViewById(R.id.themeRadioGroup);
         currentStringHighlightSwitch = root.findViewById(R.id.currentStringHighlightSwitch);
+        mirrorTextSwitch = root.findViewById(R.id.mirrorTextSwitch);
 
         // ScrollConfig
         autoScrollSwitch = root.findViewById(R.id.autoScrollSwitch);
@@ -90,6 +92,7 @@ public class SettingsFragment extends Fragment {
         textScaleSeekBar.setProgress(ui.getTextScale());
         textScaleValue.setText(String.valueOf(ui.getTextScale()));
         currentStringHighlightSwitch.setChecked(ui.isCurrentStringHighlight());
+        mirrorTextSwitch.setChecked(ui.isMirrorText());
         if ("DARK".equals(ui.getTheme())) {
             themeRadioGroup.check(R.id.darkThemeRadio);
         } else {
@@ -134,6 +137,9 @@ public class SettingsFragment extends Fragment {
             }
         });
         currentStringHighlightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!isInternalUpdate) updateUiConfig();
+        });
+        mirrorTextSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!isInternalUpdate) updateUiConfig();
         });
         themeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
@@ -205,6 +211,7 @@ public class SettingsFragment extends Fragment {
         UIConfig ui = settings.getUiConfig();
         ui.setTextScale(textScaleSeekBar.getProgress());
         ui.setCurrentStringHighlight(currentStringHighlightSwitch.isChecked());
+        ui.setMirrorText(mirrorTextSwitch.isChecked());
         ui.setTheme(themeRadioGroup.getCheckedRadioButtonId() == R.id.darkThemeRadio ? "DARK" : "LIGHT");
         viewModel.saveSettings(settings);
     }

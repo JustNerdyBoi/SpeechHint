@@ -15,18 +15,21 @@ import ru.application.speechhint.R;
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
     private final Document document;
     private final OnWordClickListener listener;
+    private final int textSize;
 
-    public WordAdapter(Document document, OnWordClickListener listener) {
+    public WordAdapter(Document document, int textSize, OnWordClickListener listener) {
         this.document = document;
         this.listener = listener;
+        this.textSize = textSize;
     }
 
     @NonNull
     @Override
     public WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        TextView tv = (TextView) LayoutInflater.from(parent.getContext())
+        TextView textView = (TextView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.word_item, parent, false);
-        return new WordViewHolder(tv);
+        textView.setTextSize(textSize);
+        return new WordViewHolder(textView);
     }
 
     @Override

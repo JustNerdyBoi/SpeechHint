@@ -24,4 +24,5 @@
     <string name="settings_use_voice_detection">Использовать голосовое отслеживание</string>
     <string name="settings_before_buffer_size">Размер буфера до</string>
     <string name="settings_after_buffer_size">Размер буфера после</string>
+    <string name="settings_mirror_text">Отразить текст</string>
 </resources>
