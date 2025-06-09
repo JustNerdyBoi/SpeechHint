@@ -20,6 +20,8 @@ import ru.application.speechhint.ui.fragment.TextViewerFragment;
 import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +43,13 @@ public class MainActivity extends AppCompatActivity {
         teleprompterViewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
 
+        settingsViewModel.getSettingsLiveData().observe(this, settings -> {
+            if (settings.getUiConfig().getTheme().equals("DARK")) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+        });
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.setScrimColor(getResources().getColor(R. color. scrimColor));

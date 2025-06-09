@@ -53,7 +53,7 @@ public class SettingsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.settings_fragment, container, false);
 
-        viewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
 
         // UIConfig
         textScaleSeekBar = root.findViewById(R.id.textScaleSeekBar);

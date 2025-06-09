@@ -3,6 +3,6 @@
     android:id="@+id/word_text"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textColor="@color/white"
+    android:textColor="@color/textColor"
     android:textSize="24sp"
     android:padding="4dp"/>
