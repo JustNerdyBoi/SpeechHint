@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollConfigModule"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_scroll"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Autoscroll Switch -->
+    <Switch
+        android:id="@+id/autoScrollSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_use_autoscroll"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Autoscroll Speed -->
+    <TextView
+        android:id="@+id/autoscrollSpeedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_autoscroll_speed"
+        android:layout_marginBottom="4dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+        <SeekBar
+            android:id="@+id/autoscrollSpeedSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="400"
+            android:min="0"/>
+        <TextView
+            android:id="@+id/autoscrollSpeedValue"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:gravity="end"/>
+    </LinearLayout>
+</LinearLayout>

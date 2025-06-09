@@ -1,0 +1,31 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settingsScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/settingsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- UIConfig Module -->
+        <include layout="@layout/module_ui_config"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginVertical="16dp"/>
+
+        <!-- ScrollConfig Module -->
+        <include layout="@layout/module_scroll_config"/>
+
+        <!-- SttConfig Module -->
+        <include layout="@layout/module_stt_config"/>
+
+    </LinearLayout>
+</ScrollView>

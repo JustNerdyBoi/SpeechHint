@@ -12,4 +12,16 @@
     <string name="delete_word">Удалить слово</string>
     <string name="add_word_before">Добавить слово до</string>
     <string name="add_word_after">Добавить слово полсе</string>
+    <string name="settings_ui">Настройки интерфейса</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_text_scale">Размер текста</string>
+    <string name="settings_show_current_word">Выделить центральную строку</string>
+    <string name="settings_scroll">Прокрутка</string>
+    <string name="settings_use_autoscroll">Включить прокрутку</string>
+    <string name="settings_autoscroll_speed">Скорость прокрутки</string>
+    <string name="settings_stt">Настройки голоса</string>
+    <string name="settings_use_voice_detection">Использовать голосовое отслеживание</string>
+    <string name="settings_before_buffer_size">Размер буфера до</string>
+    <string name="settings_after_buffer_size">Размер буфера после</string>
 </resources>
