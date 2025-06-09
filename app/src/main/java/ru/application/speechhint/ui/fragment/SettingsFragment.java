@@ -45,7 +45,7 @@ public class SettingsFragment extends Fragment {
     private SeekBar afterBufferSizeSeekBar;
     private TextView afterBufferSizeValue;
 
-    private boolean isInternalUpdate = false; // Чтобы избежать циклов
+    private boolean isInternalUpdate = false;
 
     @Nullable
     @Override
@@ -77,7 +77,6 @@ public class SettingsFragment extends Fragment {
 
         setupListeners();
 
-        // Подписка на изменения
         viewModel.getSettingsLiveData().observe(getViewLifecycleOwner(), this::applySettings);
 
         return root;
@@ -111,13 +110,10 @@ public class SettingsFragment extends Fragment {
         afterBufferSizeSeekBar.setProgress(stt.getSttAfterBufferSize());
         afterBufferSizeValue.setText(String.valueOf(stt.getSttAfterBufferSize()));
 
-        // Доступность STT блока
-        setSttConfigAvailability(scroll.isAutoScroll());
+        setSttConfigAvailability(scroll.isAutoScroll(), stt.isSttEnabled());
+        setUseSttSwitchDependenciesAvailability(stt.isSttEnabled(), scroll.isAutoScroll());
 
-        // Скорость автоскролла становится неактивной, если sttEnabled=true
-        setUseSttSwitchDependenciesAvailability(stt.isSttEnabled());
-
-        isInternalUpdate = false; // флаг, для предотвращения зацикливания между изменениями UI и обновлением данных в ViewModel
+        isInternalUpdate = false;
     }
 
     private void setupListeners() {
@@ -221,9 +217,6 @@ public class SettingsFragment extends Fragment {
         scroll.setAutoScroll(autoScroll);
         scroll.setSpeed(autoscrollSpeedSeekBar.getProgress());
         viewModel.saveSettings(settings);
-
-        // STT блок доступен только при autoScroll
-        setSttConfigAvailability(autoScroll);
     }
 
     private void updateSttConfig() {
@@ -235,9 +228,6 @@ public class SettingsFragment extends Fragment {
         stt.setSttBeforeBufferSize(beforeBufferSizeSeekBar.getProgress());
         stt.setSttAfterBufferSize(afterBufferSizeSeekBar.getProgress());
         viewModel.saveSettings(settings);
-
-        // Отключить скорость автоскролла, если stt включен
-        setUseSttSwitchDependenciesAvailability(sttEnabled);
     }
 
     private void setBufferSizeControlsEnabled(boolean enabled) {
@@ -247,23 +237,19 @@ public class SettingsFragment extends Fragment {
         afterBufferSizeValue.setEnabled(enabled);
     }
 
-    private void setSttConfigAvailability(boolean enabled) {
-        boolean sttChecked = sttEnabledSwitch.isChecked();
-        sttConfigLabel.setEnabled(enabled);
-        sttEnabledSwitch.setEnabled(enabled);
-        afterBufferSizeValue.setEnabled(enabled);
+    private void setSttConfigAvailability(boolean autoScroll, boolean sttEnabled) {
+        sttConfigLabel.setEnabled(autoScroll);
+        sttEnabledSwitch.setEnabled(autoScroll);
 
-        setBufferSizeControlsEnabled(enabled && sttChecked);
+        setBufferSizeControlsEnabled(autoScroll && sttEnabled);
     }
 
-    private void setUseSttSwitchDependenciesAvailability(boolean enabled) {
-        boolean autoScrollChecked = autoScrollSwitch.isChecked();
+    private void setUseSttSwitchDependenciesAvailability(boolean sttEnabled, boolean autoScrollChecked) {
+        boolean autoScrollControlsEnabled = !sttEnabled && autoScrollChecked;
+        autoscrollSpeedLabel.setEnabled(autoScrollControlsEnabled);
+        autoscrollSpeedSeekBar.setEnabled(autoScrollControlsEnabled);
+        autoscrollSpeedValue.setEnabled(autoScrollControlsEnabled);
 
-        boolean autoScrollEnabled = !enabled && autoScrollChecked;
-        autoscrollSpeedLabel.setEnabled(autoScrollEnabled);
-        autoscrollSpeedSeekBar.setEnabled(autoScrollEnabled);
-        autoscrollSpeedValue.setEnabled(autoScrollEnabled);
-
-        setBufferSizeControlsEnabled(enabled && autoScrollChecked);
+        setBufferSizeControlsEnabled(sttEnabled && autoScrollChecked);
     }
 }
