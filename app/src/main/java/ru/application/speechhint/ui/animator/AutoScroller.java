@@ -7,25 +7,32 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class AutoScroller {
     private final RecyclerView recyclerView;
+    private final float density;
     private boolean running = false;
-    private float currentSpeedPxPerSec = 0f;
-    private float targetSpeedPxPerSec = 0f;
+    private float currentSpeedDpPerSec = 0f;
+    private float targetSpeedDpPerSec = 0f;
     private float scrollRemainder = 0f;
     private long lastFrameTimeNanos = 0L;
     private ValueAnimator speedAnimator;
 
     public AutoScroller(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
+        this.density = recyclerView.getResources().getDisplayMetrics().density;
     }
 
-    // Запуск прокрутки с постоянной скоростью
-    public void startScrolling(float speedPxPerSecond) {
+    // dp -> px
+    private float dpToPx(float dp) {
+        return dp * density;
+    }
+
+    // Запуск прокрутки с постоянной скоростью (в dp)
+    public void startScrolling(float speedDpPerSecond) {
         stopScrolling();
-        this.currentSpeedPxPerSec = speedPxPerSecond;
-        this.targetSpeedPxPerSec = speedPxPerSecond;
+        this.currentSpeedDpPerSec = speedDpPerSecond;
+        this.targetSpeedDpPerSec = speedDpPerSecond;
         scrollRemainder = 0f;
         running = true;
-        lastFrameTimeNanos = 0L; // сбросить, чтобы корректно вычислить dt на первом кадре
+        lastFrameTimeNanos = 0L;
         Choreographer.getInstance().postFrameCallback(frameCallback);
     }
 
@@ -37,20 +44,20 @@ public class AutoScroller {
         scrollRemainder = 0f;
     }
 
-    // Плавное изменение скорости
-    public void setSpeed(float newSpeedPxPerSecond) {
-        if (targetSpeedPxPerSec == newSpeedPxPerSecond) return;
+    // Плавное изменение скорости (в dp)
+    public void setSpeed(float newSpeedDpPerSecond) {
+        if (targetSpeedDpPerSec == newSpeedDpPerSecond) return;
 
-        final float fromSpeed = currentSpeedPxPerSec;
-        targetSpeedPxPerSec = newSpeedPxPerSecond;
+        final float fromSpeed = currentSpeedDpPerSec;
+        targetSpeedDpPerSec = newSpeedDpPerSecond;
 
         if (speedAnimator != null) speedAnimator.cancel();
 
-        speedAnimator = ValueAnimator.ofFloat(fromSpeed, newSpeedPxPerSecond);
-        speedAnimator.setDuration(1000); // 1.0 сек на изменение скорости разгон
+        speedAnimator = ValueAnimator.ofFloat(fromSpeed, newSpeedDpPerSecond);
+        speedAnimator.setDuration(1000); // 1 сек
         speedAnimator.setInterpolator(new LinearInterpolator());
         speedAnimator.addUpdateListener(animation -> {
-            currentSpeedPxPerSec = (float) animation.getAnimatedValue();
+            currentSpeedDpPerSec = (float) animation.getAnimatedValue();
         });
         speedAnimator.start();
     }
@@ -63,12 +70,13 @@ public class AutoScroller {
             if (lastFrameTimeNanos == 0L) {
                 lastFrameTimeNanos = frameTimeNanos;
             }
-            float dt = (frameTimeNanos - lastFrameTimeNanos) / 1_000_000_000f; // наносекунды -> секунды
+            float dt = (frameTimeNanos - lastFrameTimeNanos) / 1_000_000_000f;
             lastFrameTimeNanos = frameTimeNanos;
 
-            float delta = currentSpeedPxPerSec * dt + scrollRemainder;
-            int dy = (int) delta;
-            scrollRemainder = delta - dy;
+            // Перевод скорости из dp/sec в px/sec для вычисления смещения в пикселях
+            float deltaPx = dpToPx(currentSpeedDpPerSec) * dt + scrollRemainder;
+            int dy = (int) deltaPx;
+            scrollRemainder = deltaPx - dy;
 
             if (dy != 0) {
                 recyclerView.scrollBy(0, dy);

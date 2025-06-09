@@ -23,11 +23,13 @@ import ru.application.speechhint.ui.adapter.WordAdapter;
 import ru.application.speechhint.ui.animator.AutoScroller;
 import ru.application.speechhint.ui.layouts.WordWallLayoutManager;
 import ru.application.speechhint.viewmodel.SettingsViewModel;
+import ru.application.speechhint.viewmodel.SpeechRecognitionViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 public class TextViewerFragment extends Fragment {
     private TeleprompterViewModel teleprompterViewModel;
     private SettingsViewModel settingsViewModel;
+    private SpeechRecognitionViewModel speechRecognitionViewModel;
     private Document document;
     private int textScale;
 
@@ -46,6 +48,7 @@ public class TextViewerFragment extends Fragment {
 
         teleprompterViewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
         settingsViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
+        speechRecognitionViewModel = new ViewModelProvider(requireActivity()).get(SpeechRecognitionViewModel.class);
 
         document = teleprompterViewModel.getDocumentLiveData().getValue();
         textScale = settingsViewModel.getSettingsLiveData().getValue().getUiConfig().getTextScale();

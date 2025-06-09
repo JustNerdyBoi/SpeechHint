@@ -77,9 +77,10 @@ public class SettingsFragment extends Fragment {
         afterBufferSizeSeekBar = root.findViewById(R.id.afterBufferSizeSeekBar);
         afterBufferSizeValue = root.findViewById(R.id.afterBufferSizeValue);
 
-        setupListeners();
-
+        applySettings(viewModel.getSettingsLiveData().getValue());
         viewModel.getSettingsLiveData().observe(getViewLifecycleOwner(), this::applySettings);
+
+        setupListeners();
 
         return root;
     }
