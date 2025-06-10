@@ -72,7 +72,6 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
 
             // Принудительный перенос строки, если слово == "\n"
             if (view.getVisibility() == View.GONE) {
-                // Переносим вниз только если есть элементы в текущей строке
                 if (maxHeightInLine != 0) {
                     curTop += (int) (maxHeightInLine * EXTRA_LINE_SPACE);
                     totalHeight += (int) (maxHeightInLine * EXTRA_LINE_SPACE);
@@ -95,7 +94,6 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
             curLeft += w;
             maxHeightInLine = Math.max(maxHeightInLine, h);
         }
-        // Добавляем высоту последней строки, если она была
         if (maxHeightInLine != 0) {
             totalHeight += maxHeightInLine;
         }

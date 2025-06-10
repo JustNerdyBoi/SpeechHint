@@ -130,7 +130,7 @@ public class TextViewerFragment extends Fragment {
 
         float targetScroll = (wordView.getTop() - (float) (recyclerView.getHeight() / 8)) / recyclerView.getResources().getDisplayMetrics().density;
 
-        float speed = (float) Math.min(Math.pow(1.025, Math.abs(targetScroll)) - 1, 500);
+        float speed = (float) Math.min(0.1 * Math.pow(Math.abs(targetScroll), 1.4), 500);
         if (Math.abs(targetScroll) < 20) speed = 0;
 
         if (targetScroll < 0) speed = -speed;

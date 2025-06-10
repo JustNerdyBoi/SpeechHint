@@ -10,10 +10,8 @@ public class AutoScroller {
     private final float density;
     private boolean running = false;
     private float currentSpeedDpPerSec = 0f;
-    private float targetSpeedDpPerSec = 0f;
     private float scrollRemainder = 0f;
     private long lastFrameTimeNanos = 0L;
-    private ValueAnimator speedAnimator;
 
     public AutoScroller(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
@@ -29,7 +27,6 @@ public class AutoScroller {
     public void startScrolling(float speedDpPerSecond) {
         stopScrolling();
         this.currentSpeedDpPerSec = speedDpPerSecond;
-        this.targetSpeedDpPerSec = speedDpPerSecond;
         scrollRemainder = 0f;
         running = true;
         lastFrameTimeNanos = 0L;
@@ -40,26 +37,12 @@ public class AutoScroller {
     public void stopScrolling() {
         running = false;
         Choreographer.getInstance().removeFrameCallback(frameCallback);
-        if (speedAnimator != null) speedAnimator.cancel();
         scrollRemainder = 0f;
     }
 
     // Плавное изменение скорости (в dp)
     public void setSpeed(float newSpeedDpPerSecond) {
-        if (targetSpeedDpPerSec == newSpeedDpPerSecond) return;
-
-        final float fromSpeed = currentSpeedDpPerSec;
-        targetSpeedDpPerSec = newSpeedDpPerSecond;
-
-        if (speedAnimator != null) speedAnimator.cancel();
-
-        speedAnimator = ValueAnimator.ofFloat(fromSpeed, newSpeedDpPerSecond);
-        speedAnimator.setDuration(50); // 0.05 сек
-        speedAnimator.setInterpolator(new LinearInterpolator());
-        speedAnimator.addUpdateListener(animation -> {
-            currentSpeedDpPerSec = (float) animation.getAnimatedValue();
-        });
-        speedAnimator.start();
+        currentSpeedDpPerSec = newSpeedDpPerSecond;
     }
 
     private final Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
