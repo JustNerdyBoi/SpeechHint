@@ -10,8 +10,8 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
     private int totalHeight = 0;      // Общая высота контента
     private int scrollOffsetY = 0;    // Текущее смещение
 
-    private static final double EXTRA_LINE_SPACE = 1.2;
-    private static final double LINE_SPACE = 0.8;
+    private static final double EXTRA_LINE_SPACE = 1.0;
+    private static final double LINE_SPACE = 0.7;
 
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {

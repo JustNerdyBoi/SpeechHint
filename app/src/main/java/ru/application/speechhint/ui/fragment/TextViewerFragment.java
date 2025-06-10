@@ -3,6 +3,7 @@ package ru.application.speechhint.ui.fragment;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Choreographer;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import ru.application.domain.entity.Document;
+import ru.application.domain.entity.SttConfig;
 import ru.application.domain.entity.Word;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.adapter.WordAdapter;
@@ -32,6 +34,7 @@ public class TextViewerFragment extends Fragment {
     private SpeechRecognitionViewModel speechRecognitionViewModel;
     private Document document;
     private int textScale;
+    private boolean isFollowingWord = false;
 
     RecyclerView recyclerView;
     AutoScroller scroller;
@@ -83,32 +86,87 @@ public class TextViewerFragment extends Fragment {
                 // TODO: реализовать подсветку центральной строки
             }
 
-            if (settings.getUiConfig().isMirrorText()){
+            if (settings.getUiConfig().isMirrorText()) {
                 recyclerView.setScaleY(-1);
             } else {
                 recyclerView.setScaleY(1);
             }
 
-            if (settings.getScrollConfig().isAutoScroll()){
-                if (settings.getSttConfig().isSttEnabled()){
-                    scroller.stopScrolling();
-                    // TODO: реализовать отслеживание
-                }
-                else {
+            if (settings.getScrollConfig().isAutoScroll()) {
+                if (settings.getSttConfig().isSttEnabled()) {
+                    scroller.startScrolling(0);
+                    speechRecognitionViewModel.startSpeechRecognition();
+                    startFollowingWord();
+                } else {
+                    speechRecognitionViewModel.stopSpeechRecognition();
+                    stopFollowingWord();
                     scroller.startScrolling(settings.getScrollConfig().getSpeed());
                 }
             } else {
+                speechRecognitionViewModel.stopSpeechRecognition();
+                stopFollowingWord();
                 scroller.stopScrolling();
             }
         });
+
+        speechRecognitionViewModel.getRecognizedWord().observe(getViewLifecycleOwner(), word -> {
+            if (word == null) return;
+            Document doc = teleprompterViewModel.getDocumentLiveData().getValue();
+            SttConfig sttConfig = settingsViewModel.getSettingsLiveData().getValue().getSttConfig();
+            teleprompterViewModel.onWordRecognized(word, doc, sttConfig);
+        });
     }
+
+    private void followWordPosition() {
+        if (recyclerView == null) return;
+        Integer position = teleprompterViewModel.getCurrentPositionLiveData().getValue();
+        if (position == null) return;
+
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (layoutManager == null) return;
+
+        View wordView = layoutManager.findViewByPosition(position);
+        if (wordView == null) return;
+
+        float targetScroll = (wordView.getTop() - (float) (recyclerView.getHeight() / 8)) / recyclerView.getResources().getDisplayMetrics().density;
+
+        float speed = (float) Math.min(Math.pow(1.025, Math.abs(targetScroll)) - 1, 500);
+        if (Math.abs(targetScroll) < 20) speed = 0;
+
+        if (targetScroll < 0) speed = -speed;
+
+        scroller.setSpeed(speed);
+    }
+
+    private void startFollowingWord() {
+        if (!isFollowingWord) {
+            isFollowingWord = true;
+            Choreographer.getInstance().postFrameCallback(positionFollowCallback);
+        }
+    }
+
+    private void stopFollowingWord() {
+        if (isFollowingWord) {
+            isFollowingWord = false;
+            Choreographer.getInstance().removeFrameCallback(positionFollowCallback);
+            scroller.setSpeed(0f);
+        }
+    }
+
+    private final Choreographer.FrameCallback positionFollowCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            followWordPosition();
+            Choreographer.getInstance().postFrameCallback(this);
+        }
+    };
 
     private void setupRecyclerView(Document document, int textScale) {
         Log.i("TextViewerFragment", "Deploying new document with " + document.getWords().size() + " words.");
         WordAdapter wordAdapter = new WordAdapter(document, textScale, new WordAdapter.OnWordClickListener() {
             @Override
             public void onWordClick(Word word, int position) {
-                // TODO: Реагировать на клик
+                teleprompterViewModel.setCurrentPosition(position);
             }
 
             @Override
@@ -172,7 +230,7 @@ public class TextViewerFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        stopFollowingWord();
         super.onDestroy();
     }
-
 }

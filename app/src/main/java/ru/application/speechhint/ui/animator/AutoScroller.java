@@ -54,7 +54,7 @@ public class AutoScroller {
         if (speedAnimator != null) speedAnimator.cancel();
 
         speedAnimator = ValueAnimator.ofFloat(fromSpeed, newSpeedDpPerSecond);
-        speedAnimator.setDuration(1000); // 1 сек
+        speedAnimator.setDuration(50); // 0.05 сек
         speedAnimator.setInterpolator(new LinearInterpolator());
         speedAnimator.addUpdateListener(animation -> {
             currentSpeedDpPerSec = (float) animation.getAnimatedValue();

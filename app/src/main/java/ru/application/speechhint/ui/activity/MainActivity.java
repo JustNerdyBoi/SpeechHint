@@ -1,7 +1,8 @@
 package ru.application.speechhint.ui.activity;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayout.setScrimColor(getResources().getColor(R. color. scrimColor));
+        drawerLayout.setScrimColor(getResources().getColor(R.color.scrimColor));
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settingsDrawerContainer, new SettingsFragment())
@@ -72,6 +73,21 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
             }
         });
+
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            WindowInsetsController insetsController = getWindow().getInsetsController();
+            if (insetsController != null) {
+                insetsController.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+                insetsController.setSystemBarsBehavior(
+                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                );
+            }
+        }
 
     }
 }

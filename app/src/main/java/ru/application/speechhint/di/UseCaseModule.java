@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent;
 import ru.application.domain.repository.DocumentRepository;
 import ru.application.domain.repository.SettingsRepository;
 import ru.application.domain.repository.SpeechRecognitionRepository;
+import ru.application.domain.usecase.CalculatePositionUseCase;
 import ru.application.domain.usecase.GetSettingsUseCase;
 import ru.application.domain.usecase.LoadDocumentUseCase;
 import ru.application.domain.usecase.SaveSettingsUseCase;
@@ -38,5 +39,10 @@ public class UseCaseModule {
     @Provides
     public GetSettingsUseCase provideGetSettingsUseCase(SettingsRepository repository){
         return new GetSettingsUseCase(repository);
+    }
+
+    @Provides
+    public CalculatePositionUseCase provideCalculatePositionUseCase(){
+        return new CalculatePositionUseCase();
     }
 }
