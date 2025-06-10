@@ -31,7 +31,7 @@ public class DocumentParser {
             case "docx":
                 return parseDocx(new ByteArrayInputStream(data));
             case "odt":
-//                return parseOdt(new ByteArrayInputStream(data));
+                return parseOdt(new ByteArrayInputStream(data));
             default:
                 throw new IllegalArgumentException("Unsupported file format: " + extension);
         }
