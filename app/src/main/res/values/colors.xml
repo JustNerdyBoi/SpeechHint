@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="semiBlack">#E8000000</color>
+    <color name="semiWhite">#F8FFFFFF</color>
+    <color name="textColor">@color/black</color>
+    <color name="backgroundColor">@color/white</color>
+    <color name="scrimColor">@color/semiWhite</color>
 </resources>

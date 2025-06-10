@@ -58,6 +58,6 @@ public class CalculatePositionUseCase {
 
     private boolean isWordEquals(LinkedList<Word> words, int pos, String word) {
         if (pos < 0 || pos >= words.size()) return false;
-        return word.equals(words.get(pos).getText());
+        return words.get(pos).getText().toLowerCase().contains(word.toLowerCase());
     }
 }

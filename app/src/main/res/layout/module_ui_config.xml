@@ -1,0 +1,74 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/uiConfigModule"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/uiConfigTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_ui"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Theme Switcher -->
+    <RadioGroup
+        android:id="@+id/themeRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        <RadioButton
+            android:id="@+id/lightThemeRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_theme_light"/>
+        <RadioButton
+            android:id="@+id/darkThemeRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_theme_dark"/>
+    </RadioGroup>
+
+    <!-- Text Scale -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_text_scale"
+        android:layout_marginBottom="8dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+        <SeekBar
+            android:id="@+id/textScaleSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="200"
+            android:min="10"/>
+        <TextView
+            android:id="@+id/textScaleValue"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:text="20"
+            android:gravity="end"/>
+    </LinearLayout>
+
+    <!-- Highlight Current String -->
+    <Switch
+        android:id="@+id/currentStringHighlightSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_show_current_word" />
+
+    <Switch
+        android:id="@+id/mirrorTextSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_mirror_text" />
+
+</LinearLayout>

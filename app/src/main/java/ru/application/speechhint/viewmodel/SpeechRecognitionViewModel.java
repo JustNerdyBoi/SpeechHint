@@ -1,7 +1,5 @@
 package ru.application.speechhint.viewmodel;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -33,12 +31,10 @@ public class SpeechRecognitionViewModel extends ViewModel {
             @Override
             public void onWordRecognized(String word) {
                 recognizedWord.postValue(word);
-                Log.i("SpeechRecognition", word);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e("SpeechRecognition", throwable.toString());
             }
         });
     }

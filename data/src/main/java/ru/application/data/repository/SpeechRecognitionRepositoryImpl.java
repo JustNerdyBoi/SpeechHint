@@ -8,6 +8,8 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import ru.application.domain.repository.SpeechRecognitionRepository;
 
@@ -17,8 +19,7 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
     private SpeechRecognizer speechRecognizer;
     private Listener listener;
     private boolean isListening = false;
-    private String lastWord = "";
-
+    private Set<String> lastWordsSet = new HashSet<>();
     public SpeechRecognitionRepositoryImpl(Context context) {
         this.context = context.getApplicationContext();
     }
@@ -31,7 +32,7 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
             speechRecognizer.setRecognitionListener(new ContinuousRecognitionListener());
         }
         isListening = true;
-        lastWord = "";
+        lastWordsSet = new HashSet<>();
         startListening();
     }
 
@@ -72,6 +73,9 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
 
         @Override
         public void onEndOfSpeech() {
+            if (isListening) {
+                startListening();
+            }
         }
 
         @Override
@@ -80,16 +84,22 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
                 listener.onError(new Exception("Speech error: " + error));
             }
             if (isListening) {
-                lastWord = "";
                 startListening();
             }
         }
 
         @Override
         public void onResults(Bundle results) {
-            // Перезапуск распознавания
+            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            if (matches != null && !matches.isEmpty() && listener != null) {
+                String[] words = matches.get(0).trim().split("\\s+");
+                for (String word : words) {
+                    if (!word.isEmpty() && lastWordsSet.add(word.toLowerCase())) {
+                        listener.onWordRecognized(word);
+                    }
+                }
+            }
             if (isListening) {
-                lastWord = "";
                 startListening();
             }
         }
@@ -99,11 +109,9 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
             ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             if (matches != null && !matches.isEmpty() && listener != null) {
                 String[] words = matches.get(0).trim().split("\\s+");
-                if (words.length > 0) {
-                    String currentWord = words[words.length - 1];
-                    if (!currentWord.equalsIgnoreCase(lastWord)) {
-                        lastWord = currentWord;
-                        listener.onWordRecognized(currentWord);
+                for (String word : words) {
+                    if (!word.isEmpty() && lastWordsSet.add(word.toLowerCase())) {
+                        listener.onWordRecognized(word);
                     }
                 }
             }

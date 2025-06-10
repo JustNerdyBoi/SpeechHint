@@ -19,4 +19,11 @@ public class ScrollConfig {
     public void setAutoScroll(boolean autoScroll) {
         this.autoScroll = autoScroll;
     }
+
+    public static ScrollConfig defaultConfig() {
+        ScrollConfig config = new ScrollConfig();
+        config.setAutoScroll(false);
+        config.setSpeed(100.0f);
+        return config;
+    }
 }

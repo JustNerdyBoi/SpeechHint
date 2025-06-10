@@ -28,4 +28,12 @@ public class SttConfig {
     public void setSttAfterBufferSize(int sttAfterBufferSize) {
         this.sttAfterBufferSize = sttAfterBufferSize;
     }
+
+    public static SttConfig defaultConfig() {
+        SttConfig config = new SttConfig();
+        config.setSttEnabled(false);
+        config.setSttBeforeBufferSize(5);
+        config.setSttAfterBufferSize(10);
+        return config;
+    }
 }

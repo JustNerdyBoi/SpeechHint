@@ -11,4 +11,17 @@
     <string name="delete_word">Delete word</string>
     <string name="add_word_before">Add word before</string>
     <string name="add_word_after">Add word after</string>
+    <string name="settings_ui">UI Settings</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_text_scale">Text Scale</string>
+    <string name="settings_show_current_word">Highlight Current String</string>
+    <string name="settings_scroll">Scrolling</string>
+    <string name="settings_use_autoscroll">Enable AutoScroll</string>
+    <string name="settings_autoscroll_speed">AutoScroll Speed</string>
+    <string name="settings_stt">Voice settings</string>
+    <string name="settings_use_voice_detection">Enable Voice Detection</string>
+    <string name="settings_before_buffer_size">Before Buffer Size</string>
+    <string name="settings_after_buffer_size">After Buffer Size</string>
+    <string name="settings_mirror_text">Mirror text</string>
 </resources>

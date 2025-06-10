@@ -28,4 +28,12 @@ public class Settings {
     public void setUiConfig(UIConfig uiConfig) {
         this.uiConfig = uiConfig;
     }
+
+    public static Settings defaultSettings() {
+        Settings settings = new Settings();
+        settings.setScrollConfig(ScrollConfig.defaultConfig());
+        settings.setSttConfig(SttConfig.defaultConfig());
+        settings.setUiConfig(UIConfig.defaultConfig());
+        return settings;
+    }
 }
