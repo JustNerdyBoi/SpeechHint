@@ -8,15 +8,9 @@ import ru.application.domain.entity.Word;
 
 import java.io.*;
 import java.util.LinkedList;
+import org.apache.poi.xwpf.usermodel.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.poi.xwpf.usermodel.*;
-//import org.odftoolkit.simple.TextDocument;
-//import org.odftoolkit.simple.text.Paragraph;
-//import org.odftoolkit.simple.text.Text;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.NodeList;
 
 public class DocumentParser {
     public static Document parse(InputStream is) throws IOException {
@@ -43,35 +37,46 @@ public class DocumentParser {
         }
     }
 
-//    public static Document parseOdt(InputStream is) throws IOException {
-//        LinkedList<Word> words = new LinkedList<>();
-//
-//        try {
-//            TextDocument document = TextDocument.loadDocument(is);
-//            List<Paragraph> paragraphs = document.getParagraphs();
-//            boolean firstPara = true;
-//            for (Paragraph paragraph : paragraphs) {
-//                if (!firstPara) {
-//                    words.add(new Word("\n"));
-//                }
-//                firstPara = false;
-//                List<Text> texts = paragraph.getTexts();
-//                for (Text text : texts) {
-//                    for (String wordStr : text.getStringValue().split("\\s+")) {
-//                        if (!wordStr.isEmpty()) {
-//                            words.add(new Word(wordStr));
-//                        }
-//                    }
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            throw new IOException("Ошибка при разборе ODT файла", e);
-//        }
-//        Document doc = new Document();
-//        doc.setWords(words);
-//        return doc;
-//    }
+    public static Document parseOdt(InputStream is) throws IOException {
+        LinkedList<Word> words = new LinkedList<>();
+        ZipInputStream zipIn = new ZipInputStream(is);
+        ZipEntry entry;
+
+        try {
+            while ((entry = zipIn.getNextEntry()) != null) {
+                if (entry.getName().equals("content.xml")) {
+                    // Читаем content.xml
+                    String content = readStream(zipIn);
+                    // Упрощенная обработка XML (удаляем все теги)
+                    String text = content.replaceAll("<[^>]+>", " ");
+                    text = text.replaceAll("\\s+", " ").trim();
+
+                    for (String wordStr : text.split("\\s+")) {
+                        if (!wordStr.isEmpty()) {
+                            words.add(new Word(wordStr));
+                        }
+                    }
+                    break;
+                }
+            }
+        } finally {
+            zipIn.close();
+        }
+
+        Document doc = new Document();
+        doc.setWords(words);
+        return doc;
+    }
+
+    private static String readStream(InputStream is) throws IOException {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = is.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        return result.toString("UTF-8");
+    }
 
     // For TXT: treat each line as a paragraph, and insert \n as a separate Word after each line
     public static Document parseTxt(InputStream is) throws IOException {
