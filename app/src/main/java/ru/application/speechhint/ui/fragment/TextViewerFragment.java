@@ -24,6 +24,7 @@ import ru.application.speechhint.R;
 import ru.application.speechhint.ui.adapter.WordAdapter;
 import ru.application.speechhint.ui.animator.AutoScroller;
 import ru.application.speechhint.ui.layouts.WordWallLayoutManager;
+import ru.application.speechhint.viewmodel.ServerViewModel;
 import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.SpeechRecognitionViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
@@ -32,6 +33,7 @@ public class TextViewerFragment extends Fragment {
     private TeleprompterViewModel teleprompterViewModel;
     private SettingsViewModel settingsViewModel;
     private SpeechRecognitionViewModel speechRecognitionViewModel;
+    private ServerViewModel serverViewModel;
     private Document document;
     private int textScale;
     private boolean isFollowingWord = false;
@@ -52,6 +54,8 @@ public class TextViewerFragment extends Fragment {
         teleprompterViewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
         settingsViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
         speechRecognitionViewModel = new ViewModelProvider(requireActivity()).get(SpeechRecognitionViewModel.class);
+        serverViewModel = new ViewModelProvider(requireActivity()).get(ServerViewModel.class);
+
 
         document = teleprompterViewModel.getDocumentLiveData().getValue();
         textScale = settingsViewModel.getSettingsLiveData().getValue().getUiConfig().getTextScale();
@@ -115,6 +119,13 @@ public class TextViewerFragment extends Fragment {
             SttConfig sttConfig = settingsViewModel.getSettingsLiveData().getValue().getSttConfig();
             teleprompterViewModel.onWordRecognized(word, doc, sttConfig);
         });
+
+        serverViewModel.getReceivedScrollLiveData().observe(getViewLifecycleOwner(), scroll -> {
+            if (scroll != null) {
+                recyclerView.scrollBy(0, scroll);
+                serverViewModel.clearReceivedScrollLiveData();
+            }
+        });
     }
 
     private void followWordPosition() {
@@ -130,7 +141,7 @@ public class TextViewerFragment extends Fragment {
 
         float targetScroll = (wordView.getTop() - (float) (recyclerView.getHeight() / 8)) / recyclerView.getResources().getDisplayMetrics().density;
 
-        float speed = (float) Math.min(0.1 * Math.pow(Math.abs(targetScroll), 1.4), 500);
+        float speed = (float) (0.1 * Math.pow(Math.abs(targetScroll), 1.4));
         if (Math.abs(targetScroll) < 20) speed = 0;
 
         if (targetScroll < 0) speed = -speed;

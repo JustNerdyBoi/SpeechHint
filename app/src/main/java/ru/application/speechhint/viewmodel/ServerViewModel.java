@@ -12,6 +12,7 @@ import ru.application.domain.entity.ServerConnectionInfo;
 import ru.application.domain.entity.Settings;
 import ru.application.domain.repository.ServerRepository;
 import ru.application.domain.usecase.GetServerConnectionInfoUseCase;
+import ru.application.domain.usecase.SetServerCurrentDocumentUseCase;
 import ru.application.domain.usecase.SetServerCurrentPositionUseCase;
 import ru.application.domain.usecase.SetServerCurrentSettingsUseCase;
 import ru.application.domain.usecase.StartServerUseCase;
@@ -24,11 +25,12 @@ public class ServerViewModel extends ViewModel {
     private final GetServerConnectionInfoUseCase getServerConnectionInfoUseCase;
     private final SetServerCurrentPositionUseCase setServerCurrentPositionUseCase;
     private final SetServerCurrentSettingsUseCase setServerCurrentSettingsUseCase;
+    private final SetServerCurrentDocumentUseCase setServerCurrentDocumentUseCase;
 
-    private final MutableLiveData<Document> documentLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Settings> settingsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Integer> positionLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Integer> scrollLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Document> receivedDocumentLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Settings> receivedSettingsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> receivedPositionLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> receivedScrollLiveData = new MutableLiveData<>();
 
     @Inject
     public ServerViewModel(StartServerUseCase startServerUseCase,
@@ -36,29 +38,34 @@ public class ServerViewModel extends ViewModel {
                            GetServerConnectionInfoUseCase getServerConnectionInfoUseCase,
                            SetServerCurrentPositionUseCase setPositionUseCase,
                            SetServerCurrentSettingsUseCase setServerCurrentSettingsUseCase,
+                           SetServerCurrentDocumentUseCase setServerCurrentDocumentUseCase,
                            ServerRepository serverRepository) {
         this.startServerUseCase = startServerUseCase;
         this.stopServerUseCase = stopServerUseCase;
         this.getServerConnectionInfoUseCase = getServerConnectionInfoUseCase;
         this.setServerCurrentSettingsUseCase = setServerCurrentSettingsUseCase;
         this.setServerCurrentPositionUseCase = setPositionUseCase;
+        this.setServerCurrentDocumentUseCase = setServerCurrentDocumentUseCase;
 
         serverRepository.setListener(new ServerRepository.Listener() {
             @Override
             public void onCurrentPositionReceived(int newCurrentPosition) {
-                positionLiveData.postValue(newCurrentPosition);
+                receivedPositionLiveData.postValue(newCurrentPosition);
             }
+
             @Override
             public void onScrollReceived(int scrollY) {
-                scrollLiveData.postValue(scrollY);
+                receivedScrollLiveData.postValue(scrollY);
             }
+
             @Override
             public void onDocumentReceived(Document documents) {
-                documentLiveData.postValue(documents);
+                receivedDocumentLiveData.postValue(documents);
             }
+
             @Override
             public void onSettingsReceived(Settings settings) {
-                settingsLiveData.postValue(settings);
+                receivedSettingsLiveData.postValue(settings);
             }
         });
     }
@@ -66,21 +73,62 @@ public class ServerViewModel extends ViewModel {
     public void startServer() {
         startServerUseCase.execute();
     }
+
     public void stopServer() {
         stopServerUseCase.execute();
     }
-    public LiveData<Document> getDocumentLiveData() { return documentLiveData; }
-    public LiveData<Settings> getSettingsLiveData() { return settingsLiveData; }
-    public LiveData<Integer> getPositionLiveData() { return positionLiveData; }
-    public LiveData<Integer> getScrollLiveData() { return scrollLiveData; }
+
+    public LiveData<Document> getReceivedDocumentLiveData() {
+        return receivedDocumentLiveData;
+    }
+
+    public void clearReceivedDocumentLiveData() {
+        receivedDocumentLiveData.setValue(null);
+    }
+
+    public LiveData<Settings> getReceivedSettingsLiveData() {
+        return receivedSettingsLiveData;
+    }
+
+    public void clearReceivedSettingsLiveData() {
+        receivedSettingsLiveData.setValue(null);
+    }
+
+    public LiveData<Integer> getReceivedPositionLiveData() {
+        return receivedPositionLiveData;
+    }
+
+    public void clearReceivedPositionLiveData() {
+        receivedPositionLiveData.setValue(null);
+    }
+
+    public LiveData<Integer> getReceivedScrollLiveData() {
+        return receivedScrollLiveData;
+    }
+
+    public void clearReceivedScrollLiveData() {
+        receivedScrollLiveData.setValue(null);
+    }
+
     public ServerConnectionInfo getServerConnectionInfo() {
         return getServerConnectionInfoUseCase.execute();
     }
+
     public void setServerCurrentPosition(int pos) {
-        setServerCurrentPositionUseCase.execute(pos);
+        if (getServerConnectionInfo() != null) {
+            setServerCurrentPositionUseCase.execute(pos);
+        }
     }
 
-    public void setServerCurrentSettings(Settings settings){
-        setServerCurrentSettingsUseCase.execute(settings);
+    public void setServerCurrentSettings(Settings settings) {
+        if (getServerConnectionInfo() != null) {
+            setServerCurrentSettingsUseCase.execute(settings);
+        }
+    }
+
+    public void setServerCurrentDocument(Document document) {
+        if (getServerConnectionInfo() != null) {
+            setServerCurrentDocumentUseCase.execute(document);
+        }
     }
 }

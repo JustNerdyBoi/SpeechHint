@@ -13,6 +13,7 @@ import ru.application.domain.usecase.GetServerConnectionInfoUseCase;
 import ru.application.domain.usecase.GetSettingsUseCase;
 import ru.application.domain.usecase.LoadDocumentUseCase;
 import ru.application.domain.usecase.SaveSettingsUseCase;
+import ru.application.domain.usecase.SetServerCurrentDocumentUseCase;
 import ru.application.domain.usecase.SetServerCurrentPositionUseCase;
 import ru.application.domain.usecase.SetServerCurrentSettingsUseCase;
 import ru.application.domain.usecase.SpeechRecognitionUseCase;
@@ -71,5 +72,10 @@ public class UseCaseModule {
     @Provides
     public SetServerCurrentSettingsUseCase provideSetCurrentSettingsUseCase(ServerRepository repository){
         return new SetServerCurrentSettingsUseCase(repository);
+    }
+
+    @Provides
+    public SetServerCurrentDocumentUseCase provideSetServerCurrentDocumentUseCase(ServerRepository repository){
+        return new SetServerCurrentDocumentUseCase(repository);
     }
 }

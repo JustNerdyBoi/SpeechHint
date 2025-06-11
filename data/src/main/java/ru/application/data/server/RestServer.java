@@ -11,6 +11,9 @@ import java.util.Map;
 public class RestServer extends NanoHTTPD {
     private final Gson gson = new Gson();
     private ServerRepository.Listener listener;
+    private int currentPosition;
+    private Settings currentSettings;
+    private Document currentDocument;
 
     public RestServer(int port) {
         super(port);
@@ -63,5 +66,17 @@ public class RestServer extends NanoHTTPD {
             return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "text/plain", "Error: " + e.getMessage());
         }
         return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/plain", "Not found");
+    }
+
+    public void setCurrentPosition(int pos){
+        this.currentPosition = pos;
+    }
+
+    public void setCurrentSettings(Settings settings){
+        this.currentSettings = settings;
+    }
+
+    public void setCurrentDocument(Document document){
+        this.currentDocument = document;
     }
 }

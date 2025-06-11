@@ -9,8 +9,6 @@ public interface ServerRepository {
 
     void stopServer();
 
-    boolean isRunning();
-
     ServerConnectionInfo getServerConnectionInfo();
 
     void setListener(Listener listener);
@@ -18,6 +16,8 @@ public interface ServerRepository {
     void setServerCurrentPosition(int newCurrentPosition);
 
     void setServerCurrentSettings(Settings settings);
+
+    void setServerCurrentDocument(Document document);
 
     interface Listener {
         void onCurrentPositionReceived(int newCurrentPosition);

@@ -36,14 +36,13 @@ public class ServerRepositoryImpl implements ServerRepository {
     }
 
     @Override
-    public boolean isRunning() {
-        return server != null;
-    }
-
-    @Override
     public ServerConnectionInfo getServerConnectionInfo() {
-        String ip = NetworkUtils.getLocalIpAddress();
-        return new ServerConnectionInfo(ip, SERVER_PORT);
+        if (server != null) {
+            String ip = NetworkUtils.getLocalIpAddress();
+            return new ServerConnectionInfo(ip, SERVER_PORT);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -55,8 +54,23 @@ public class ServerRepositoryImpl implements ServerRepository {
     }
 
     @Override
-    public void setServerCurrentPosition(int newCurrentPosition) { /* ... */ }
+    public void setServerCurrentPosition(int newCurrentPosition) {
+        if (server != null) {
+            server.setCurrentPosition(newCurrentPosition);
+        }
+    }
 
     @Override
-    public void setServerCurrentSettings(Settings settings) { /* ... */ }
+    public void setServerCurrentSettings(Settings settings) {
+        if (server != null) {
+            server.setCurrentSettings(settings);
+        }
+    }
+
+    @Override
+    public void setServerCurrentDocument(Document document) {
+        if (server != null) {
+            server.setCurrentDocument(document);
+        }
+    }
 }
