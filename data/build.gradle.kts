@@ -32,7 +32,8 @@ dependencies {
     implementation(project(":domain"))
     implementation(libs.poi.ooxml)
     implementation(libs.gson)
-    
+    implementation(libs.nanohttpd)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
 }

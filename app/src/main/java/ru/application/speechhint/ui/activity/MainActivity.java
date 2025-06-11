@@ -1,6 +1,7 @@
 package ru.application.speechhint.ui.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
@@ -14,11 +15,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import ru.application.domain.entity.Settings;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.fragment.FileSelectFragment;
 import ru.application.speechhint.ui.fragment.SettingsFragment;
 import ru.application.speechhint.ui.fragment.TextViewerFragment;
+import ru.application.speechhint.viewmodel.ServerViewModel;
 import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TeleprompterViewModel teleprompterViewModel;
     private SettingsViewModel settingsViewModel;
+    private ServerViewModel serverViewModel;
 
 
     @Override
@@ -44,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
         teleprompterViewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        serverViewModel = new ViewModelProvider(this).get(ServerViewModel.class);
+
+        serverViewModel.startServer();
+        Log.i("SERVER", serverViewModel.getServerConnectionInfo().getIp() + ":" + serverViewModel.getServerConnectionInfo().getPort());
 
         settingsViewModel.getSettingsLiveData().observe(this, settings -> {
             if (settings.getUiConfig().getTheme().equals("DARK")) {
