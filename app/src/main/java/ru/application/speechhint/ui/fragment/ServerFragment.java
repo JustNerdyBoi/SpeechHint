@@ -51,9 +51,9 @@ public class ServerFragment extends Fragment {
         imageQr = view.findViewById(R.id.image_qr);
         textLink = view.findViewById(R.id.text_link);
 
-        serverViewModel = new ViewModelProvider(this).get(ServerViewModel.class);
-        settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
-        teleprompterViewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
+        serverViewModel = new ViewModelProvider(requireActivity()).get(ServerViewModel.class);
+        settingsViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
+        teleprompterViewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
 
         if (serverViewModel.getServerConnectionInfo() != null){
             switchServer.setChecked(true);

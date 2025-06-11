@@ -1,5 +1,7 @@
 package ru.application.speechhint.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -127,6 +129,7 @@ public class ServerViewModel extends ViewModel {
     }
 
     public void setServerCurrentDocument(Document document) {
+        Log.i("SERVER", document == null ? "NULLDOC" : document.toString());
         if (getServerConnectionInfo() != null) {
             setServerCurrentDocumentUseCase.execute(document);
         }

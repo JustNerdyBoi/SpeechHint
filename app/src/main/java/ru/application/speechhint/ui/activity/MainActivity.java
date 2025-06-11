@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         serverViewModel.getReceivedDocumentLiveData().observe(this, document -> {
             if (document != null) {
-                teleprompterViewModel.getDocumentLiveData().setValue(document);
+                teleprompterViewModel.setDocument(document);
                 serverViewModel.clearReceivedDocumentLiveData();
             }
         });

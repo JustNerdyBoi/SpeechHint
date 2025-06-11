@@ -1,5 +1,7 @@
 package ru.application.data.repository;
 
+import android.content.Context;
+
 import ru.application.data.server.RestServer;
 import ru.application.data.utils.NetworkUtils;
 import ru.application.domain.entity.ServerConnectionInfo;
@@ -13,11 +15,16 @@ public class ServerRepositoryImpl implements ServerRepository {
     private RestServer server;
     private Listener listener;
     private static final int SERVER_PORT = 8080;
+    private final Context context;
+
+    public ServerRepositoryImpl(Context context) {
+        this.context = context;
+    }
 
     @Override
     public void startServer() {
         if (server == null) {
-            server = new RestServer(SERVER_PORT);
+            server = new RestServer(SERVER_PORT, context);
             server.setListener(listener);
             try {
                 server.start();

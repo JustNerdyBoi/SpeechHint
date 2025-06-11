@@ -57,8 +57,8 @@ public class RepositoryModule {
 
     @Provides
     @Singleton
-    public ServerRepository provideServerRepository() {
-        return new ServerRepositoryImpl();
+    public ServerRepository provideServerRepository(@ApplicationContext Context context) {
+        return new ServerRepositoryImpl(context);
     }
 
 }
