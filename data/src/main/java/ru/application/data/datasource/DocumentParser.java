@@ -11,6 +11,9 @@ import java.util.LinkedList;
 import org.apache.poi.xwpf.usermodel.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import java.nio.charset.StandardCharsets;
 
 public class DocumentParser {
     public static Document parse(InputStream is) throws IOException {
@@ -40,21 +43,16 @@ public class DocumentParser {
     public static Document parseOdt(InputStream is) throws IOException {
         LinkedList<Word> words = new LinkedList<>();
         ZipInputStream zipIn = new ZipInputStream(is);
-        ZipEntry entry;
+        ZipEntry entry = null;
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream xmlOut = new ByteArrayOutputStream();
 
         try {
             while ((entry = zipIn.getNextEntry()) != null) {
                 if (entry.getName().equals("content.xml")) {
-                    // Читаем content.xml
-                    String content = readStream(zipIn);
-                    // Упрощенная обработка XML (удаляем все теги)
-                    String text = content.replaceAll("<[^>]+>", " ");
-                    text = text.replaceAll("\\s+", " ").trim();
-
-                    for (String wordStr : text.split("\\s+")) {
-                        if (!wordStr.isEmpty()) {
-                            words.add(new Word(wordStr));
-                        }
+                    int len;
+                    while ((len = zipIn.read(buffer)) != -1) {
+                        xmlOut.write(buffer, 0, len);
                     }
                     break;
                 }
@@ -63,19 +61,54 @@ public class DocumentParser {
             zipIn.close();
         }
 
+        if (xmlOut.size() == 0) {
+            throw new IOException("content.xml not found in ODT");
+        }
+
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true); // ODT использует пространства имён
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            InputStream xmlStream = new ByteArrayInputStream(xmlOut.toByteArray());
+            org.w3c.dom.Document xmlDoc = builder.parse(xmlStream);
+
+            NodeList paragraphs = xmlDoc.getElementsByTagNameNS("*", "p");
+            for (int i = 0; i < paragraphs.getLength(); i++) {
+                Node p = paragraphs.item(i);
+                extractTextWithLineBreaks(p, words);
+
+                // добавляем перенос строки после параграфа
+                words.add(new Word("\n"));
+            }
+        } catch (Exception e) {
+            throw new IOException("Failed to parse content.xml", e);
+        }
+
         Document doc = new Document();
         doc.setWords(words);
         return doc;
     }
 
-    private static String readStream(InputStream is) throws IOException {
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = is.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
+    private static void extractTextWithLineBreaks(Node node, LinkedList<Word> words) {
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeType() == Node.TEXT_NODE) {
+                String[] splitWords = child.getTextContent().split("\\s+");
+                for (String wordStr : splitWords) {
+                    if (!wordStr.isEmpty()) {
+                        words.add(new Word(wordStr));
+                    }
+                }
+            } else if (child.getNodeType() == Node.ELEMENT_NODE) {
+                Element el = (Element) child;
+                if (el.getLocalName().equals("line-break")) {
+                    words.add(new Word("\n"));
+                } else {
+                    extractTextWithLineBreaks(child, words); // рекурсия
+                }
+            }
         }
-        return result.toString("UTF-8");
     }
 
     // For TXT: treat each line as a paragraph, and insert \n as a separate Word after each line
@@ -106,27 +139,46 @@ public class DocumentParser {
     }
 
     // For DOCX: treat each paragraph, insert \n as a Word after each paragraph (even if empty)
-    public static Document parseDocx(InputStream is) throws IOException { // TODO: sometimes skips '\n' (compare to loading txt)
+    public static Document parseDocx(InputStream is) throws IOException {
         LinkedList<Word> words = new LinkedList<>();
         XWPFDocument docx = new XWPFDocument(is);
         boolean firstPara = true;
+
         for (XWPFParagraph para : docx.getParagraphs()) {
             if (!firstPara) {
-                // Add \n as a Word at the end of the previous paragraph
-                Word newline = new Word("\n");
-                words.add(newline);
+                words.add(new Word("\n"));
             }
             firstPara = false;
 
-            String text = para.getText();
-            for (String wordStr : text.split("\\s+")) {
-                if (!wordStr.isEmpty()) {
-                    Word word = new Word(wordStr);
-                    words.add(word);
+            for (XWPFRun run : para.getRuns()) {
+                String runText = run.getText(0);
+                if (runText == null) continue;
+
+                int breaks = run.getCTR().getBrList().size();
+                for (int i = 0; i < breaks; i++) {
+                    words.add(new Word("\n"));
+                }
+
+                // Разбиваем по \n внутри run
+                String[] parts = runText.split("\n", -1);
+                for (int i = 0; i < parts.length; i++) {
+                    String part = parts[i];
+                    if (!part.isEmpty()) {
+                        for (String wordStr : part.split("\\s+")) {
+                            if (!wordStr.isEmpty()) {
+                                words.add(new Word(wordStr));
+                            }
+                        }
+                    }
+                    if (i < parts.length - 1) {
+                        words.add(new Word("\n"));
+                    }
                 }
             }
         }
+
         docx.close();
+
         Document doc = new Document();
         doc.setWords(words);
         return doc;
