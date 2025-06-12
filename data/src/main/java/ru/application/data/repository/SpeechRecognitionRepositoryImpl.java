@@ -3,6 +3,8 @@ package ru.application.data.repository;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -20,37 +22,47 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
     private Listener listener;
     private boolean isListening = false;
     private Set<String> lastWordsSet = new HashSet<>();
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
     public SpeechRecognitionRepositoryImpl(Context context) {
         this.context = context.getApplicationContext();
+        createSpeechRecognizer();
+    }
+
+    private void createSpeechRecognizer() {
+        if (speechRecognizer == null) {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
+            speechRecognizer.setRecognitionListener(new ContinuousRecognitionListener());
+        }
     }
 
     @Override
     public void startRecognition(Listener listener) {
         this.listener = listener;
-        if (speechRecognizer == null) {
-            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
-            speechRecognizer.setRecognitionListener(new ContinuousRecognitionListener());
-        }
         isListening = true;
         lastWordsSet = new HashSet<>();
+        createSpeechRecognizer();
         startListening();
     }
 
     private void startListening() {
-        if (!isListening) return;
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-        speechRecognizer.startListening(intent);
+        try {
+            speechRecognizer.startListening(intent);
+        } catch (Exception e) {
+            if (listener != null) listener.onError(e);
+        }
     }
 
     @Override
     public void stopRecognition() {
         isListening = false;
         if (speechRecognizer != null) {
-            speechRecognizer.stopListening();
-            speechRecognizer.destroy();
-            speechRecognizer = null;
+            try {
+                speechRecognizer.stopListening();
+            } catch (Exception ignored) {}
         }
     }
 
@@ -74,7 +86,7 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
         @Override
         public void onEndOfSpeech() {
             if (isListening) {
-                startListening();
+                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, 300);
             }
         }
 
@@ -83,8 +95,9 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
             if (listener != null) {
                 listener.onError(new Exception("Speech error: " + error));
             }
+
             if (isListening) {
-                startListening();
+                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, 500);
             }
         }
 
@@ -99,8 +112,9 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
                     }
                 }
             }
+
             if (isListening) {
-                startListening();
+                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, 300);
             }
         }
 

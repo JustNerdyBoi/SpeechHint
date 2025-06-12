@@ -39,6 +39,8 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     annotationProcessor(libs.dagger.hilt.android.compiler)
 
+    implementation(libs.zxing.android.embedded)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

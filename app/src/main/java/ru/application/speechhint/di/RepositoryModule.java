@@ -15,9 +15,11 @@ import ru.application.data.datasource.PreferencesDataSource;
 import ru.application.data.datasource.ServerDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
 import ru.application.data.repository.DocumentRepositoryImpl;
+import ru.application.data.repository.ServerRepositoryImpl;
 import ru.application.data.repository.SettingsRepositoryImpl;
 import ru.application.data.repository.SpeechRecognitionRepositoryImpl;
 import ru.application.domain.repository.DocumentRepository;
+import ru.application.domain.repository.ServerRepository;
 import ru.application.domain.repository.SettingsRepository;
 import ru.application.domain.repository.SpeechRecognitionRepository;
 
@@ -26,6 +28,7 @@ import ru.application.domain.repository.SpeechRecognitionRepository;
 public class RepositoryModule {
     
     @Provides
+    @Singleton
     public DocumentRepository provideDocumentRepository(
             LocalDataSource localDataSource,
             GoogleDriveDataSource googleDriveDataSource,
@@ -51,4 +54,11 @@ public class RepositoryModule {
     public SettingsRepository provideSettingsRepository(PreferencesDataSource preferencesDataSource){
         return new SettingsRepositoryImpl(preferencesDataSource);
     }
+
+    @Provides
+    @Singleton
+    public ServerRepository provideServerRepository(@ApplicationContext Context context) {
+        return new ServerRepositoryImpl(context);
+    }
+
 }

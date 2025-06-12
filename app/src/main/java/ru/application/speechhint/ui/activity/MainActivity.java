@@ -1,6 +1,7 @@
 package ru.application.speechhint.ui.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
@@ -14,11 +15,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import ru.application.domain.entity.Settings;
+import ru.application.domain.entity.Document;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.fragment.FileSelectFragment;
+import ru.application.speechhint.ui.fragment.ServerFragment;
 import ru.application.speechhint.ui.fragment.SettingsFragment;
 import ru.application.speechhint.ui.fragment.TextViewerFragment;
+import ru.application.speechhint.viewmodel.ServerViewModel;
 import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TeleprompterViewModel teleprompterViewModel;
     private SettingsViewModel settingsViewModel;
+    private ServerViewModel serverViewModel;
 
 
     @Override
@@ -44,14 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
         teleprompterViewModel = new ViewModelProvider(this).get(TeleprompterViewModel.class);
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
+        serverViewModel = new ViewModelProvider(this).get(ServerViewModel.class);
 
-        settingsViewModel.getSettingsLiveData().observe(this, settings -> {
-            if (settings.getUiConfig().getTheme().equals("DARK")) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        });
+        setupListeners();
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayout.setScrimColor(getResources().getColor(R.color.scrimColor));
@@ -65,7 +64,24 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.mainFrameLayout, new FileSelectFragment())
                 .commit();
 
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.serverDrawerContainer, new ServerFragment())
+                .commit();
+    }
+
+    private void setupListeners() {
+        settingsViewModel.getSettingsLiveData().observe(this, settings -> {
+            serverViewModel.setServerCurrentSettings(settings);
+            if (settings.getUiConfig().getTheme().equals("DARK")) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+        });
+
         teleprompterViewModel.getDocumentLiveData().observe(this, document -> {
+            serverViewModel.setServerCurrentDocument(document);
             if (document != null && !(getSupportFragmentManager().findFragmentById(R.id.mainFrameLayout) instanceof TextViewerFragment)) {
                 getSupportFragmentManager()
                         .beginTransaction()
@@ -74,6 +90,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        teleprompterViewModel.getCurrentPositionLiveData().observe(this, position -> {
+            serverViewModel.setServerCurrentPosition(position);
+        });
+
+        serverViewModel.getReceivedDocumentLiveData().observe(this, document -> {
+            if (document != null) {
+                teleprompterViewModel.setDocument(document);
+                serverViewModel.clearReceivedDocumentLiveData();
+            }
+        });
+
+        serverViewModel.getReceivedSettingsLiveData().observe(this, settings -> {
+            if (settings != null) {
+                settingsViewModel.saveSettings(settings);
+                serverViewModel.clearReceivedSettingsLiveData();
+            }
+        });
+
+        serverViewModel.getReceivedPositionLiveData().observe(this, position -> {
+            if (position != null) {
+                Document document = teleprompterViewModel.getDocumentLiveData().getValue();
+                if (document != null && 0 <= position && position < document.getWords().size())
+                    teleprompterViewModel.setCurrentPosition(position);
+                serverViewModel.clearReceivedPositionLiveData();
+            }
+        });
     }
 
     @Override
@@ -88,6 +130,5 @@ public class MainActivity extends AppCompatActivity {
                 );
             }
         }
-
     }
 }

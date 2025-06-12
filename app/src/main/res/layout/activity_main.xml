@@ -29,4 +29,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_marginTop="30dp"/>
+
+    <FrameLayout
+        android:id="@+id/serverDrawerContainer"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginTop="30dp"/>
 </androidx.drawerlayout.widget.DrawerLayout>

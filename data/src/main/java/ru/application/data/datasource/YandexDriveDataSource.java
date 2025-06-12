@@ -14,7 +14,7 @@ import ru.application.domain.entity.Document;
 
 public class YandexDriveDataSource {
 
-    public Document loadDocument(String yandexPublicLink) throws Exception { // TODO: test and fix after fixing ExtensionReceiver
+    public Document loadDocument(String yandexPublicLink) throws Exception {
         String apiUrl = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=" + URLEncoder.encode(yandexPublicLink, StandardCharsets.UTF_8);
         HttpURLConnection conn = (HttpURLConnection) new URL(apiUrl).openConnection();
         conn.setRequestMethod("GET");

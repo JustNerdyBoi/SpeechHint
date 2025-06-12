@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teleprompter Control Panel</title>
+    <link rel="stylesheet" href="style_panel.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 data-i18n="title">Teleprompter Control Panel</h1>
+            <div class="language-selector">
+                <button onclick="changeLanguage('en')">EN</button>
+                <button onclick="changeLanguage('ru')">RU</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="text-display" id="textDisplay">
+                <div class="no-document" data-i18n="noDocument">No document</div>
+            </div>
+
+            <div class="controls">
+                <div class="document-controls">
+                    <button class="upload-btn" onclick="openUploadModal()" data-i18n="uploadDocument">Upload Document</button>
+                </div>
+
+                <div class="settings-panel">
+                    <h2 data-i18n="settings">Settings</h2>
+                    
+                    <div class="settings-group">
+                        <h3 data-i18n="scrollSettings">Scroll Settings</h3>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="autoScroll" onchange="updateSettings()">
+                                <span data-i18n="autoScroll">Auto Scroll</span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label data-i18n="scrollSpeed">Scroll Speed</label>
+                            <input type="range" id="scrollSpeed" min="0" max="500" onchange="updateSettings()">
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3 data-i18n="sttSettings">Speech-to-Text Settings</h3>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="sttEnabled" onchange="updateSettings()">
+                                <span data-i18n="sttEnabled">STT Enabled</span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label data-i18n="sttBeforeBuffer">STT Before Buffer</label>
+                            <input type="number" id="sttBeforeBuffer" min="1" max="20" onchange="updateSettings()">
+                        </div>
+                        <div class="setting-item">
+                            <label data-i18n="sttAfterBuffer">STT After Buffer</label>
+                            <input type="number" id="sttAfterBuffer" min="1" max="20" onchange="updateSettings()">
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3 data-i18n="uiSettings">UI Settings</h3>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="currentStringHighlight" onchange="updateSettings()">
+                                <span data-i18n="currentStringHighlight">Highlight Current String</span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="mirrorText" onchange="updateSettings()">
+                                <span data-i18n="mirrorText">Mirror Text</span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label data-i18n="textScale">Text Scale</label>
+                            <input type="range" id="textScale" min="10" max="200" onchange="updateSettings()">
+                        </div>
+                        <div class="setting-item">
+                            <label data-i18n="theme">Theme</label>
+                            <select id="theme" onchange="updateSettings()">
+                                <option value="DARK" data-i18n="darkTheme">Dark</option>
+                                <option value="LIGHT" data-i18n="lightTheme">Light</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUploadModal()">&times;</span> <!-- Это крестик умножения, хз почему андройд студио ругается -->
+            <h2 data-i18n="uploadDocument">Upload Document</h2>
+            <div class="upload-options">
+                <div class="upload-option">
+                    <h3 data-i18n="uploadFile">Upload File</h3>
+                    <input type="file" id="fileUpload" accept=".txt,.odt,.docx">
+                    <button onclick="uploadFile()" data-i18n="upload">Upload</button>
+                </div>
+                <div class="upload-option">
+                    <h3 data-i18n="yandexDisk">Yandex.Disk</h3>
+                    <input type="text" id="yandexLink" placeholder="Enter Yandex.Disk link">
+                    <button onclick="uploadYandexLink()" data-i18n="upload">Upload</button>
+                </div>
+                <div class="upload-option">
+                    <h3 data-i18n="googleDrive">Google Drive</h3>
+                    <input type="text" id="googleLink" placeholder="Enter Google Drive link">
+                    <button onclick="uploadGoogleLink()" data-i18n="upload">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="wordContextMenu" class="custom-context-menu" style="display:none;position:absolute;z-index:2000;">
+        <ul>
+            <li class="context-item" data-action="addBefore" data-i18n="contextAddBefore"></li>
+            <li class="context-item" data-action="addAfter" data-i18n="contextAddAfter"></li>
+            <li class="context-item" data-action="edit" data-i18n="contextEdit"></li>
+            <li class="context-item" data-action="delete" data-i18n="contextDelete"></li>
+        </ul>
+    </div>
+
+    <script src="app_panel.js"></script>
+</body>
+</html> 

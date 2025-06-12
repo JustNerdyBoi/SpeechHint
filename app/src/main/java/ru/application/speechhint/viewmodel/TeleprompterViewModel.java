@@ -3,6 +3,7 @@ package ru.application.speechhint.viewmodel;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -32,7 +33,7 @@ public class TeleprompterViewModel extends ViewModel {
     public void LoadLocalDocument(Uri uri) {
         new Thread(() -> {
             try {
-                getDocumentLiveData().postValue(loadDocumentUseCase.execute(DocumentSource.LOCAL, uri.toString()));
+                documentLiveData.postValue(loadDocumentUseCase.execute(DocumentSource.LOCAL, uri.toString()));
             } catch (Exception e) {
                 // TODO show error message
             }
@@ -42,7 +43,7 @@ public class TeleprompterViewModel extends ViewModel {
     public void LoadGoogleDocument(String shortenedUrl) {
         new Thread(() -> {
             try {
-                getDocumentLiveData().postValue(loadDocumentUseCase.execute(DocumentSource.GOOGLE_DRIVE, shortenedUrl));
+                documentLiveData.postValue(loadDocumentUseCase.execute(DocumentSource.GOOGLE_DRIVE, shortenedUrl));
             } catch (Exception e) {
             }
 
@@ -52,7 +53,7 @@ public class TeleprompterViewModel extends ViewModel {
     public void LoadYandexDocument(String shortenedUrl) {
         new Thread(() -> {
             try {
-                getDocumentLiveData().postValue(loadDocumentUseCase.execute(DocumentSource.YANDEX_DRIVE, shortenedUrl));
+                documentLiveData.postValue(loadDocumentUseCase.execute(DocumentSource.YANDEX_DRIVE, shortenedUrl));
             } catch (Exception e) {
             }
 
@@ -93,11 +94,14 @@ public class TeleprompterViewModel extends ViewModel {
         }
     }
 
-    public MutableLiveData<Document> getDocumentLiveData() {
+    public LiveData<Document> getDocumentLiveData() {
         return documentLiveData;
     }
+    public void setDocument(Document document) {
+        documentLiveData.setValue(document);
+    }
 
-    public MutableLiveData<Integer> getCurrentPositionLiveData() {
+    public LiveData<Integer> getCurrentPositionLiveData() {
         return currentPositionLiveData;
     }
 
