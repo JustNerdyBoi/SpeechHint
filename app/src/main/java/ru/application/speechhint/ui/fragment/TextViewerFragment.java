@@ -122,7 +122,7 @@ public class TextViewerFragment extends Fragment {
 
         serverViewModel.getReceivedScrollLiveData().observe(getViewLifecycleOwner(), scroll -> {
             if (scroll != null) {
-                recyclerView.scrollBy(0, scroll);
+                recyclerView.scrollBy(0, (int)(scroll * recyclerView.getHeight()));
                 serverViewModel.clearReceivedScrollLiveData();
             }
         });

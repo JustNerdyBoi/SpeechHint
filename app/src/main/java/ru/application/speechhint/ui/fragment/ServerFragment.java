@@ -79,7 +79,7 @@ public class ServerFragment extends Fragment {
     private void showQrAndLink() {
         ServerConnectionInfo info = serverViewModel.getServerConnectionInfo();
         if (info != null) {
-            String url = "http://" + info.getIp() + ":" + info.getPort();
+            String url = "http://" + info.getIp() + ":" + info.getPort() + "/";
             try {
                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                 Bitmap bitmap = barcodeEncoder.encodeBitmap(url, BarcodeFormat.QR_CODE, 400, 400);

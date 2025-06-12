@@ -32,7 +32,7 @@ public class ServerViewModel extends ViewModel {
     private final MutableLiveData<Document> receivedDocumentLiveData = new MutableLiveData<>();
     private final MutableLiveData<Settings> receivedSettingsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> receivedPositionLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Integer> receivedScrollLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Float> receivedScrollLiveData = new MutableLiveData<>();
 
     @Inject
     public ServerViewModel(StartServerUseCase startServerUseCase,
@@ -56,7 +56,7 @@ public class ServerViewModel extends ViewModel {
             }
 
             @Override
-            public void onScrollReceived(int scrollY) {
+            public void onScrollReceived(float scrollY) {
                 receivedScrollLiveData.postValue(scrollY);
             }
 
@@ -104,7 +104,7 @@ public class ServerViewModel extends ViewModel {
         receivedPositionLiveData.setValue(null);
     }
 
-    public LiveData<Integer> getReceivedScrollLiveData() {
+    public LiveData<Float> getReceivedScrollLiveData() {
         return receivedScrollLiveData;
     }
 
@@ -129,7 +129,6 @@ public class ServerViewModel extends ViewModel {
     }
 
     public void setServerCurrentDocument(Document document) {
-        Log.i("SERVER", document == null ? "NULLDOC" : document.toString());
         if (getServerConnectionInfo() != null) {
             setServerCurrentDocumentUseCase.execute(document);
         }

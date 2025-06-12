@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teleprompter Control Panel</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_panel.css">
 </head>
 <body>
     <div class="container">
@@ -39,7 +39,7 @@
                         </div>
                         <div class="setting-item">
                             <label data-i18n="scrollSpeed">Scroll Speed</label>
-                            <input type="range" id="scrollSpeed" min="0" max="500" step="10" onchange="updateSettings()">
+                            <input type="range" id="scrollSpeed" min="0" max="500" onchange="updateSettings()">
                         </div>
                     </div>
 
@@ -77,7 +77,7 @@
                         </div>
                         <div class="setting-item">
                             <label data-i18n="textScale">Text Scale</label>
-                            <input type="range" id="textScale" min="10" max="200" step="5" onchange="updateSettings()">
+                            <input type="range" id="textScale" min="10" max="200" onchange="updateSettings()">
                         </div>
                         <div class="setting-item">
                             <label data-i18n="theme">Theme</label>
@@ -95,7 +95,7 @@
     <!-- Upload Modal -->
     <div id="uploadModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeUploadModal()">&times;</span>
+            <span class="close" onclick="closeUploadModal()">&times;</span> <!-- Это крестик умножения, хз почему андройд студио ругается -->
             <h2 data-i18n="uploadDocument">Upload Document</h2>
             <div class="upload-options">
                 <div class="upload-option">
@@ -117,6 +117,15 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <div id="wordContextMenu" class="custom-context-menu" style="display:none;position:absolute;z-index:2000;">
+        <ul>
+            <li class="context-item" data-action="addBefore" data-i18n="contextAddBefore"></li>
+            <li class="context-item" data-action="addAfter" data-i18n="contextAddAfter"></li>
+            <li class="context-item" data-action="edit" data-i18n="contextEdit"></li>
+            <li class="context-item" data-action="delete" data-i18n="contextDelete"></li>
+        </ul>
+    </div>
+
+    <script src="app_panel.js"></script>
 </body>
 </html> 

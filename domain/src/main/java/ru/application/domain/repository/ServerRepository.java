@@ -22,7 +22,7 @@ public interface ServerRepository {
     interface Listener {
         void onCurrentPositionReceived(int newCurrentPosition);
 
-        void onScrollReceived(int scrollY);
+        void onScrollReceived(float scrollY);
 
         void onDocumentReceived(Document documents);
 

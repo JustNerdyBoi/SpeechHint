@@ -22,7 +22,11 @@ const translations = {
         uploadFile: "Upload File",
         yandexDisk: "Yandex.Disk",
         googleDrive: "Google Drive",
-        upload: "Upload"
+        upload: "Upload",
+        contextAddBefore: "Add word before",
+        contextAddAfter: "Add word after",
+        contextEdit: "Edit",
+        contextDelete: "Delete"
     },
     ru: {
         title: "Панель управления телесуфлером",
@@ -46,18 +50,31 @@ const translations = {
         uploadFile: "Загрузить файл",
         yandexDisk: "Яндекс.Диск",
         googleDrive: "Google Drive",
-        upload: "Загрузить"
+        upload: "Загрузить",
+        contextAddBefore: "Добавить слово до",
+        contextAddAfter: "Добавить слово после",
+        contextEdit: "Изменить",
+        contextDelete: "Удалить"
     }
 };
 
 let currentLanguage = 'en';
 let currentPosition = 0;
+let contextWordIndex = null;
 let words = [];
 let settings = {
     scrollConfig: { autoScroll: true, speed: 270.0 },
     sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
     uiConfig: { currentStringHighlight: false, mirrorText: false, textScale: 85, theme: "DARK" }
 };
+
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('wordContextMenu');
+    if (menu.style.display === 'block' && !menu.contains(e.target)) {
+        menu.style.display = 'none';
+        contextWordIndex = null;
+    }
+});
 
 const textDisplay = document.getElementById('textDisplay');
 const uploadModal = document.getElementById('uploadModal');
@@ -69,6 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchPosition();
     startPolling();
     setupSliders();
+    changeLanguage(currentLanguage);
+    document.getElementById('wordContextMenu').addEventListener('click', function(e) {
+        const action = e.target.getAttribute('data-action');
+        if (action) {
+            editWordMenuAction(action);
+        }
+    });
 });
 
 // Core functions
@@ -93,6 +117,10 @@ function renderWords() {
         }
         wordElement.textContent = word.text;
         wordElement.onclick = () => setPosition(index);
+        wordElement.oncontextmenu = (e) => {
+            e.preventDefault();
+            openWordContextMenu(e, index);
+        };
         currentLine.appendChild(wordElement);
     });
 
@@ -204,18 +232,58 @@ async function updateSettings() {
 }
 
 // UI functions
-function updateSettingsUI() {
-    document.getElementById('autoScroll').checked = settings.scrollConfig.autoScroll;
-    document.getElementById('scrollSpeed').value = settings.scrollConfig.speed;
-    document.getElementById('sttEnabled').checked = settings.sttConfig.sttEnabled;
-    document.getElementById('sttBeforeBuffer').value = settings.sttConfig.sttBeforeBufferSize;
-    document.getElementById('sttAfterBuffer').value = settings.sttConfig.sttAfterBufferSize;
-    document.getElementById('currentStringHighlight').checked = settings.uiConfig.currentStringHighlight;
-    document.getElementById('mirrorText').checked = settings.uiConfig.mirrorText;
-    document.getElementById('textScale').value = settings.uiConfig.textScale;
-    document.getElementById('theme').value = settings.uiConfig.theme;
-    document.body.className = settings.uiConfig.theme.toLowerCase();
+ function updateSettingsUI() {
+     const autoScroll = document.getElementById('autoScroll');
+     autoScroll.checked = settings.scrollConfig.autoScroll;
+
+     const scrollSpeed = document.getElementById('scrollSpeed');
+     if (document.activeElement !== scrollSpeed) {
+         scrollSpeed.value = settings.scrollConfig.speed;
+     }
+
+     const sttEnabled = document.getElementById('sttEnabled');
+     sttEnabled.checked = settings.sttConfig.sttEnabled;
+
+     const sttBeforeBuffer = document.getElementById('sttBeforeBuffer');
+     if (document.activeElement !== sttBeforeBuffer) {
+         sttBeforeBuffer.value = settings.sttConfig.sttBeforeBufferSize;
+     }
+
+     const sttAfterBuffer = document.getElementById('sttAfterBuffer');
+     if (document.activeElement !== sttAfterBuffer) {
+         sttAfterBuffer.value = settings.sttConfig.sttAfterBufferSize;
+     }
+
+     const currentStringHighlight = document.getElementById('currentStringHighlight');
+     currentStringHighlight.checked = settings.uiConfig.currentStringHighlight;
+
+     const mirrorText = document.getElementById('mirrorText');
+     mirrorText.checked = settings.uiConfig.mirrorText;
+
+     const textScale = document.getElementById('textScale');
+     if (document.activeElement !== textScale) {
+         textScale.value = settings.uiConfig.textScale;
+     }
+
+     const theme = document.getElementById('theme');
+     if (document.activeElement !== theme) {
+         theme.value = settings.uiConfig.theme;
+     }
+
+     document.body.className = settings.uiConfig.theme.toLowerCase();
+     updateSliderDisplays();
+ }
+
+
+function updateSliderDisplays() {
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+        const valueDisplay = slider.parentElement.querySelector('.value-display');
+        if (valueDisplay) {
+            valueDisplay.textContent = slider.value;
+        }
+    });
 }
+
 
 function setupSliders() {
     document.querySelectorAll('input[type="range"]').forEach(slider => {
@@ -237,6 +305,42 @@ function changeLanguage(lang) {
             element.textContent = translations[lang][key];
         }
     });
+}
+
+// Menu functions
+function openWordContextMenu(e, index) {
+    contextWordIndex = index;
+    const menu = document.getElementById('wordContextMenu');
+    menu.style.display = 'block';
+    menu.style.left = e.pageX + 'px';
+    menu.style.top = e.pageY + 'px';
+}
+
+function editWordMenuAction(action) {
+    const menu = document.getElementById('wordContextMenu');
+    menu.style.display = 'none';
+    if (contextWordIndex === null) return;
+    if (action === 'addBefore' || action === 'addAfter') {
+        const newWord = prompt('Введите новое слово:');
+        if (!newWord) return;
+        const wordObj = { text: newWord };
+        if (action === 'addBefore') {
+            words.splice(contextWordIndex, 0, wordObj);
+        } else {
+            words.splice(contextWordIndex + 1, 0, wordObj);
+        }
+        sendWordsToServer();
+    } else if (action === 'edit') {
+        const oldWord = words[contextWordIndex].text;
+        const newWord = prompt('Изменить слово:', oldWord);
+        if (newWord === null) return;
+        words[contextWordIndex].text = newWord;
+        sendWordsToServer();
+    } else if (action === 'delete') {
+        words.splice(contextWordIndex, 1);
+        sendWordsToServer();
+    }
+    contextWordIndex = null;
 }
 
 // Modal functions
@@ -295,6 +399,18 @@ async function uploadGoogleLink() {
         fetchDocument();
     } catch (error) {
         console.error('Error uploading Google Drive link:', error);
+    }
+}
+
+async function sendWordsToServer() {
+    try {
+        await fetch('/document/set/json/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ words: words })
+        });
+    } catch (error) {
+        console.error('Error uploading json document:', error);
     }
 }
 
