@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import ru.application.domain.entity.Document;
+import ru.application.domain.entity.Theme;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.fragment.FileSelectFragment;
 import ru.application.speechhint.ui.fragment.ServerFragment;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupListeners() {
         settingsViewModel.getSettingsLiveData().observe(this, settings -> {
             serverViewModel.setServerCurrentSettings(settings);
-            if (settings.getUiConfig().getTheme().equals("DARK")) {
+            if (settings.getUiConfig().getTheme() == Theme.DARK) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);

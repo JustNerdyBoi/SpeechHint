@@ -70,6 +70,24 @@
                             </label>
                         </div>
                         <div class="setting-item">
+                            <label data-i18n="highlightType">Highlight type</label>
+                            <select id="highlightType" onchange="updateSettings()">
+                                <option value="LINE" data-i18n="line">Line</option>
+                                <option value="POINTER" data-i18n="pointer">Pointer</option>
+                                <option value="LIGHT_ZONE" data-i18n="lightZone">Light Zone</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label data-i18n="highlightHeight">Highlight height</label>
+                            <input type="range" id="highlightHeight" min="0" max="100" onchange="updateSettings()">
+                        </div>
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="currentWordHighlightFollow" onchange="updateSettings()">
+                                <span data-i18n="currentWordHighlightFollow">Highlight current word</span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
                             <label>
                                 <input type="checkbox" id="mirrorText" onchange="updateSettings()">
                                 <span data-i18n="mirrorText">Mirror Text</span>
@@ -117,6 +135,7 @@
         </div>
     </div>
 
+    <!-- Context Menu -->
     <div id="wordContextMenu" class="custom-context-menu" style="display:none;position:absolute;z-index:2000;">
         <ul>
             <li class="context-item" data-action="addBefore" data-i18n="contextAddBefore"></li>

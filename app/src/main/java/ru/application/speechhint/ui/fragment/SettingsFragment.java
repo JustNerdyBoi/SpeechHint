@@ -30,6 +30,14 @@ public class SettingsFragment extends Fragment {
     private TextView textScaleValue;
     private RadioGroup themeRadioGroup;
     private Switch currentStringHighlightSwitch;
+    private RadioGroup highlightRadioGroup;
+    private RadioButton highlightLine;
+    private RadioButton highlightPointer;
+    private RadioButton highlightLightZone;
+    private TextView highlightHeightLabel;
+    private SeekBar highlightHeightSeekBar;
+    private TextView highlightHeightValue;
+    private Switch highlightFollowSwitch;
     private Switch mirrorTextSwitch;
 
     // ScrollConfig
@@ -61,6 +69,14 @@ public class SettingsFragment extends Fragment {
         textScaleValue = root.findViewById(R.id.textScaleValue);
         themeRadioGroup = root.findViewById(R.id.themeRadioGroup);
         currentStringHighlightSwitch = root.findViewById(R.id.currentStringHighlightSwitch);
+        highlightRadioGroup = root.findViewById(R.id.highlightRadioGroup);
+        highlightLine = root.findViewById(R.id.highlightLine);
+        highlightPointer = root.findViewById(R.id.highlightPointer);
+        highlightLightZone = root.findViewById(R.id.highlightLightZone);
+        highlightHeightLabel = root.findViewById(R.id.highlightHeightLabel);
+        highlightHeightSeekBar = root.findViewById(R.id.highlightHeightSeekBar);
+        highlightHeightValue = root.findViewById(R.id.highlightHeightValue);
+        highlightFollowSwitch = root.findViewById(R.id.highlightFollowSwitch);
         mirrorTextSwitch = root.findViewById(R.id.mirrorTextSwitch);
 
         // ScrollConfig
@@ -93,11 +109,27 @@ public class SettingsFragment extends Fragment {
         textScaleSeekBar.setProgress(ui.getTextScale());
         textScaleValue.setText(String.valueOf(ui.getTextScale()));
         currentStringHighlightSwitch.setChecked(ui.isCurrentStringHighlight());
+        highlightHeightSeekBar.setProgress((int) (ui.getHighlightHeight() * 100));
+        highlightHeightValue.setText(String.valueOf((int) (ui.getHighlightHeight() * 100)));
+        highlightFollowSwitch.setChecked(ui.isCurrentWordHighlightFollow());
         mirrorTextSwitch.setChecked(ui.isMirrorText());
-        if ("DARK".equals(ui.getTheme())) {
-            themeRadioGroup.check(R.id.darkThemeRadio);
-        } else {
-            themeRadioGroup.check(R.id.lightThemeRadio);
+        switch (ui.getTheme()) {
+            case DARK:
+                themeRadioGroup.check(R.id.darkThemeRadio);
+                break;
+            case LIGHT:
+                themeRadioGroup.check(R.id.lightThemeRadio);
+                break;
+        }
+        switch (ui.getHighlightType()) {
+            case LINE:
+                highlightRadioGroup.check(R.id.highlightLine);
+                break;
+            case POINTER:
+                highlightRadioGroup.check(R.id.highlightPointer);
+                break;
+            case LIGHT_ZONE:
+                highlightRadioGroup.check(R.id.highlightLightZone);
         }
 
         // ScrollConfig
@@ -116,6 +148,7 @@ public class SettingsFragment extends Fragment {
 
         setSttConfigAvailability(scroll.isAutoScroll(), stt.isSttEnabled());
         setUseSttSwitchDependenciesAvailability(stt.isSttEnabled(), scroll.isAutoScroll());
+        setHighlightControlsAvailability(ui.isCurrentStringHighlight());
 
         isInternalUpdate = false;
     }
@@ -137,13 +170,36 @@ public class SettingsFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+        highlightHeightSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                highlightHeightValue.setText(String.valueOf(progress));
+                if (!isInternalUpdate && fromUser) updateUiConfig();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         currentStringHighlightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!isInternalUpdate) updateUiConfig();
+        });
+        highlightFollowSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!isInternalUpdate) updateUiConfig();
         });
         mirrorTextSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!isInternalUpdate) updateUiConfig();
         });
         themeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (!isInternalUpdate) updateUiConfig();
+        });
+        highlightRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (!isInternalUpdate) updateUiConfig();
         });
 
@@ -212,8 +268,17 @@ public class SettingsFragment extends Fragment {
         UIConfig ui = settings.getUiConfig();
         ui.setTextScale(textScaleSeekBar.getProgress());
         ui.setCurrentStringHighlight(currentStringHighlightSwitch.isChecked());
+        ui.setCurrentWordHighlightFollow(highlightFollowSwitch.isChecked());
+        ui.setHighlightHeight(highlightHeightSeekBar.getProgress() / 100f);
         ui.setMirrorText(mirrorTextSwitch.isChecked());
-        ui.setTheme(themeRadioGroup.getCheckedRadioButtonId() == R.id.darkThemeRadio ? "DARK" : "LIGHT");
+        ui.setTheme(themeRadioGroup.getCheckedRadioButtonId() == R.id.darkThemeRadio ? Theme.DARK : Theme.LIGHT);
+        if (highlightRadioGroup.getCheckedRadioButtonId() == R.id.highlightLine) {
+            ui.setHighlightType(HighlightType.LINE);
+        } else if (highlightRadioGroup.getCheckedRadioButtonId() == R.id.highlightPointer) {
+            ui.setHighlightType(HighlightType.POINTER);
+        } else if (highlightRadioGroup.getCheckedRadioButtonId() == R.id.highlightLightZone) {
+            ui.setHighlightType(HighlightType.LIGHT_ZONE);
+        }
         viewModel.saveSettings(settings);
     }
 
@@ -259,5 +324,16 @@ public class SettingsFragment extends Fragment {
         autoscrollSpeedValue.setEnabled(autoScrollControlsEnabled);
 
         setBufferSizeControlsEnabled(sttEnabled && autoScrollChecked);
+    }
+
+    private void setHighlightControlsAvailability(boolean highlightEnabled){
+        highlightLine.setEnabled(highlightEnabled);
+        highlightPointer.setEnabled(highlightEnabled);
+        highlightLightZone.setEnabled(highlightEnabled);
+        boolean highlightHeightAvailability = highlightEnabled && !highlightFollowSwitch.isChecked();
+        highlightHeightLabel.setEnabled(highlightHeightAvailability);
+        highlightHeightSeekBar.setEnabled(highlightHeightAvailability);
+        highlightHeightValue.setEnabled(highlightHeightAvailability);
+        highlightFollowSwitch.setEnabled(highlightEnabled);
     }
 }

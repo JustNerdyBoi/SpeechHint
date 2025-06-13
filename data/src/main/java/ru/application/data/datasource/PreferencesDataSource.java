@@ -2,6 +2,7 @@ package ru.application.data.datasource;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -20,6 +21,7 @@ public class PreferencesDataSource {
         String json = sharedPreferences.getString(KEY_SETTINGS, null);
         if (json == null) return Settings.defaultSettings();
         try {
+            Log.i("SETTINGS", json);
             return gson.fromJson(json, Settings.class);
         } catch (Exception e){
             return Settings.defaultSettings();

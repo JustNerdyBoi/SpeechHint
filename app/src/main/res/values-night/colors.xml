@@ -3,4 +3,5 @@
     <color name="textColor">@color/white</color>
     <color name="backgroundColor">@color/black</color>
     <color name="scrimColor">@color/semiBlack</color>
+    <color name="stringLighter">@color/lighterWhite</color>
 </resources> 

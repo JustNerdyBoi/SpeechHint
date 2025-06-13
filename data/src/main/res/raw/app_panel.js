@@ -26,7 +26,13 @@ const translations = {
         contextAddBefore: "Add word before",
         contextAddAfter: "Add word after",
         contextEdit: "Edit",
-        contextDelete: "Delete"
+        contextDelete: "Delete",
+        highlightType: "Highlight type",
+        line: "Line",
+        pointer: "Pointer",
+        lightZone: "Light Zone",
+        currentWordHighlightFollow: "Highlight current word",
+        highlightHeight: "Highlight height"
     },
     ru: {
         title: "Панель управления телесуфлером",
@@ -54,7 +60,13 @@ const translations = {
         contextAddBefore: "Добавить слово до",
         contextAddAfter: "Добавить слово после",
         contextEdit: "Изменить",
-        contextDelete: "Удалить"
+        contextDelete: "Удалить",
+        highlightType: "Тип выделения",
+        line: "Линия",
+        pointer: "Указатель",
+        lightZone: "Подсветка",
+        currentWordHighlightFollow: "Смещать выделение за последним словом",
+        highlightHeight: "Высота подсветки"
     }
 };
 
@@ -65,7 +77,7 @@ let words = [];
 let settings = {
     scrollConfig: { autoScroll: true, speed: 270.0 },
     sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
-    uiConfig: { currentStringHighlight: false, mirrorText: false, textScale: 85, theme: "DARK" }
+    uiConfig: { currentStringHighlight: false, highlightType: "LINE", highlightHeight: 0.5, currentWordHighlightFollow:true, mirrorText: false, textScale: 85, theme: "DARK" }
 };
 
 document.addEventListener('click', (e) => {
@@ -213,6 +225,9 @@ async function updateSettings() {
         },
         uiConfig: {
             currentStringHighlight: document.getElementById('currentStringHighlight').checked,
+            highlightType: document.getElementById('highlightType').value,
+            highlightHeight: parseInt(document.getElementById('highlightHeight').value) / 100.0,
+            currentWordHighlightFollow: document.getElementById('currentWordHighlightFollow').checked,
             mirrorText: document.getElementById('mirrorText').checked,
             textScale: parseInt(document.getElementById('textScale').value),
             theme: document.getElementById('theme').value
@@ -256,6 +271,19 @@ async function updateSettings() {
 
      const currentStringHighlight = document.getElementById('currentStringHighlight');
      currentStringHighlight.checked = settings.uiConfig.currentStringHighlight;
+
+     const highlightType = document.getElementById('highlightType');
+     if (document.activeElement !== highlightType) {
+         highlightType.value = settings.uiConfig.highlightType;
+     }
+
+     const currentWordHighlightFollow = document.getElementById('currentWordHighlightFollow');
+     currentWordHighlightFollow.checked = settings.uiConfig.currentWordHighlightFollow;
+
+     const highlightHeight = document.getElementById('highlightHeight');
+     if (document.activeElement !== highlightHeight) {
+         highlightHeight.value = settings.uiConfig.highlightHeight * 100;
+     }
 
      const mirrorText = document.getElementById('mirrorText');
      mirrorText.checked = settings.uiConfig.mirrorText;

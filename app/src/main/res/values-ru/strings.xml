@@ -16,7 +16,7 @@
     <string name="settings_theme_light">Светлая</string>
     <string name="settings_theme_dark">Тёмная</string>
     <string name="settings_text_scale">Размер текста</string>
-    <string name="settings_show_current_word">Выделить центральную строку</string>
+    <string name="settings_highlight_string">Выделить строку</string>
     <string name="settings_scroll">Прокрутка</string>
     <string name="settings_use_autoscroll">Включить прокрутку</string>
     <string name="settings_autoscroll_speed">Скорость прокрутки</string>
@@ -26,4 +26,9 @@
     <string name="settings_after_buffer_size">Размер буфера после</string>
     <string name="settings_mirror_text">Отразить текст</string>
     <string name="server_switch_server">Включить сервер</string>
+    <string name="settings_highlight_line">Линия</string>
+    <string name="settings_highlight_pointer">Указатель</string>
+    <string name="settings_highlight_light_zone">Подсветка</string>
+    <string name="settings_highlight_follow">Смещать выделение за последним словом</string>
+    <string name="settings_highlight_height">Высота подсветки</string>
 </resources>

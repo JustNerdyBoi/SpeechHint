@@ -63,7 +63,63 @@
         android:id="@+id/currentStringHighlightSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/settings_show_current_word" />
+        android:text="@string/settings_highlight_string" />
+
+    <RadioGroup
+        android:id="@+id/highlightRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+        <RadioButton
+            android:id="@+id/highlightLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_highlight_line"/>
+        <RadioButton
+            android:id="@+id/highlightPointer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_highlight_pointer"/>
+        <RadioButton
+            android:id="@+id/highlightLightZone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_highlight_light_zone"/>
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/highlightHeightLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/settings_highlight_height" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+        <SeekBar
+            android:id="@+id/highlightHeightSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="100"
+            android:min="0"/>
+        <TextView
+            android:id="@+id/highlightHeightValue"
+            android:layout_width="46dp"
+            android:layout_height="wrap_content"
+            android:text="0.5"
+            android:gravity="end"/>
+    </LinearLayout>
+
+
+    <Switch
+        android:id="@+id/highlightFollowSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_highlight_follow" />
 
     <Switch
         android:id="@+id/mirrorTextSwitch"

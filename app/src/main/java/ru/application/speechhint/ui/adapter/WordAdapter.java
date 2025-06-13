@@ -1,5 +1,6 @@
 package ru.application.speechhint.ui.adapter;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     public WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         TextView textView = (TextView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.word_item, parent, false);
-        textView.setTextSize(textSize);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         return new WordViewHolder(textView);
     }
 

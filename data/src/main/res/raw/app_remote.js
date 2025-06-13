@@ -24,10 +24,10 @@ let settings = {
 };
 
 let currentSettings = {
-    scrollConfig: { autoScroll: true, speed: 270.0 },
-    sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
-    uiConfig: { currentStringHighlight: false, mirrorText: false, textScale: 85, theme: "DARK" }
-};
+                          scrollConfig: { autoScroll: true, speed: 270.0 },
+                          sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
+                          uiConfig: { currentStringHighlight: false, highlightType: "LINE", highlightHeight: 0.5, currentWordHighlightFollow:true, mirrorText: false, textScale: 85, theme: "DARK" }
+                      };
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -172,7 +172,7 @@ function changeLanguage(lang) {
 function startPolling() {
     setInterval(() => {
         loadSettings();
-    }, 500); // Poll every 500ms for more responsive UI updates
+    }, 250);
 }
 
 // Event listeners

@@ -4,7 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="semiBlack">#E8000000</color>
     <color name="semiWhite">#F8FFFFFF</color>
+    <color name="lighterBlack">#33000000</color>
+    <color name="lighterWhite">#33FFFFFF</color>
+    <color name="red">#AAFF0000</color>
     <color name="textColor">@color/black</color>
     <color name="backgroundColor">@color/white</color>
     <color name="scrimColor">@color/semiWhite</color>
+    <color name="stringLighter">@color/lighterBlack</color>
 </resources>

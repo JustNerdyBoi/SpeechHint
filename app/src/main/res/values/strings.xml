@@ -15,7 +15,7 @@
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_text_scale">Text Scale</string>
-    <string name="settings_show_current_word">Highlight Current String</string>
+    <string name="settings_highlight_string">Highlight String</string>
     <string name="settings_scroll">Scrolling</string>
     <string name="settings_use_autoscroll">Enable AutoScroll</string>
     <string name="settings_autoscroll_speed">AutoScroll Speed</string>
@@ -25,4 +25,9 @@
     <string name="settings_after_buffer_size">After Buffer Size</string>
     <string name="settings_mirror_text">Mirror text</string>
     <string name="server_switch_server">Turn on server</string>
+    <string name="settings_highlight_line">Line</string>
+    <string name="settings_highlight_pointer">Pointer</string>
+    <string name="settings_highlight_light_zone">Light zone</string>
+    <string name="settings_highlight_follow">Highlight current word</string>
+    <string name="settings_highlight_height">Highlight height</string>
 </resources>

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import ru.application.domain.entity.Document;
 import ru.application.domain.entity.SttConfig;
+import ru.application.domain.entity.UIConfig;
 import ru.application.domain.entity.Word;
 import ru.application.speechhint.R;
 import ru.application.speechhint.ui.adapter.WordAdapter;
@@ -36,10 +37,15 @@ public class TextViewerFragment extends Fragment {
     private ServerViewModel serverViewModel;
     private Document document;
     private int textScale;
-    private boolean isFollowingWord = false;
+    private boolean isScrollingToWord = false;
+    private boolean highlighterFollow = false;
 
     RecyclerView recyclerView;
     AutoScroller scroller;
+    View lineView;
+    View pointerView;
+    View lighterView;
+    View currentHighlighter;
 
     @Nullable
     @Override
@@ -61,19 +67,22 @@ public class TextViewerFragment extends Fragment {
         textScale = settingsViewModel.getSettingsLiveData().getValue().getUiConfig().getTextScale();
 
         recyclerView = view.findViewById(R.id.recyclerView);
+
+        lineView = view.findViewById(R.id.lineView);
+        pointerView = view.findViewById(R.id.pointerView);
+        lighterView = view.findViewById(R.id.lighterView);
+
         scroller = new AutoScroller(recyclerView);
 
         setupListeners();
         setupRecyclerView(document, textScale);
+        recyclerView.post(() -> setupHighlighter(settingsViewModel.getSettingsLiveData().getValue().getUiConfig()));
     }
 
     private void setupListeners() {
         teleprompterViewModel.getDocumentLiveData().observe(getViewLifecycleOwner(), newDocument -> {
             if (newDocument == null) {
-                getParentFragmentManager()
-                        .beginTransaction()
-                        .remove(this)
-                        .commit();
+                getParentFragmentManager().beginTransaction().remove(this).commit();
             } else {
                 document = newDocument;
                 setupRecyclerView(newDocument, textScale);
@@ -82,13 +91,14 @@ public class TextViewerFragment extends Fragment {
 
         settingsViewModel.getSettingsLiveData().observe(getViewLifecycleOwner(), settings -> {
             if (textScale != settings.getUiConfig().getTextScale()) {
-                setupRecyclerView(document, settings.getUiConfig().getTextScale());
+                int newTextScale = settings.getUiConfig().getTextScale();
+                setupRecyclerView(document, newTextScale);
+                pointerView.setScaleY(newTextScale);
+                lighterView.setScaleY(newTextScale);
             }
             textScale = settings.getUiConfig().getTextScale();
 
-            if (settings.getUiConfig().isCurrentStringHighlight()) {
-                // TODO: реализовать подсветку центральной строки
-            }
+            setupHighlighter(settings.getUiConfig());
 
             if (settings.getUiConfig().isMirrorText()) {
                 recyclerView.setScaleY(-1);
@@ -100,15 +110,15 @@ public class TextViewerFragment extends Fragment {
                 if (settings.getSttConfig().isSttEnabled()) {
                     scroller.startScrolling(0);
                     speechRecognitionViewModel.startSpeechRecognition();
-                    startFollowingWord();
+                    startScrollingToWord();
                 } else {
                     speechRecognitionViewModel.stopSpeechRecognition();
-                    stopFollowingWord();
+                    stopScrollingToWord();
                     scroller.startScrolling(settings.getScrollConfig().getSpeed());
                 }
             } else {
                 speechRecognitionViewModel.stopSpeechRecognition();
-                stopFollowingWord();
+                stopScrollingToWord();
                 scroller.stopScrolling();
             }
         });
@@ -122,13 +132,13 @@ public class TextViewerFragment extends Fragment {
 
         serverViewModel.getReceivedScrollLiveData().observe(getViewLifecycleOwner(), scroll -> {
             if (scroll != null) {
-                recyclerView.scrollBy(0, (int)(scroll * recyclerView.getHeight()));
+                recyclerView.scrollBy(0, (int) (scroll * recyclerView.getHeight()));
                 serverViewModel.clearReceivedScrollLiveData();
             }
         });
     }
 
-    private void followWordPosition() {
+    private void scrollToWordPosition() {
         if (recyclerView == null) return;
         Integer position = teleprompterViewModel.getCurrentPositionLiveData().getValue();
         if (position == null) return;
@@ -149,25 +159,47 @@ public class TextViewerFragment extends Fragment {
         scroller.setSpeed(speed);
     }
 
-    private void startFollowingWord() {
-        if (!isFollowingWord) {
-            isFollowingWord = true;
-            Choreographer.getInstance().postFrameCallback(positionFollowCallback);
+    private void startScrollingToWord() {
+        if (!isScrollingToWord) {
+            isScrollingToWord = true;
+            Choreographer.getInstance().postFrameCallback(scrollToWordCallback);
         }
     }
 
-    private void stopFollowingWord() {
-        if (isFollowingWord) {
-            isFollowingWord = false;
-            Choreographer.getInstance().removeFrameCallback(positionFollowCallback);
+    private void startHighlighterFollow() {
+        if (!highlighterFollow) {
+            highlighterFollow = true;
+            Choreographer.getInstance().postFrameCallback(highlighterFollowCallback);
+        }
+    }
+
+    private void stopScrollingToWord() {
+        if (isScrollingToWord) {
+            isScrollingToWord = false;
+            Choreographer.getInstance().removeFrameCallback(scrollToWordCallback);
             scroller.setSpeed(0f);
         }
     }
 
-    private final Choreographer.FrameCallback positionFollowCallback = new Choreographer.FrameCallback() {
+    private void stopHighlighterFollow() {
+        if (highlighterFollow) {
+            highlighterFollow = false;
+            Choreographer.getInstance().removeFrameCallback(highlighterFollowCallback);
+        }
+    }
+
+    private final Choreographer.FrameCallback scrollToWordCallback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long frameTimeNanos) {
-            followWordPosition();
+            scrollToWordPosition();
+            Choreographer.getInstance().postFrameCallback(this);
+        }
+    };
+
+    private final Choreographer.FrameCallback highlighterFollowCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            translateHighlighterToWord();
             Choreographer.getInstance().postFrameCallback(this);
         }
     };
@@ -218,6 +250,62 @@ public class TextViewerFragment extends Fragment {
         recyclerView.setAdapter(wordAdapter);
     }
 
+    private void translateHighlighterToWord() {
+        if (recyclerView == null || currentHighlighter == null) return;
+        Integer position = teleprompterViewModel.getCurrentPositionLiveData().getValue();
+        if (position == null) return;
+
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (layoutManager == null) return;
+
+        View wordView = layoutManager.findViewByPosition(position);
+        if (wordView == null) return;
+
+        if (settingsViewModel.getSettingsLiveData().getValue().getUiConfig().isMirrorText()) {
+            currentHighlighter.setY(recyclerView.getHeight() - wordView.getY() - textScale * (currentHighlighter == lineView ? 2.5f : 1.75f));
+        } else {
+            currentHighlighter.setY(wordView.getY() + textScale * (currentHighlighter == lineView ? 2.5f : 1.75f));
+        }
+    }
+
+    private void setupHighlighter(UIConfig uiConfig) {
+        pointerView.setScaleY(uiConfig.getTextScale());
+        lighterView.setScaleY(uiConfig.getTextScale());
+        if (uiConfig.isCurrentStringHighlight()) {
+            switch (uiConfig.getHighlightType()) {
+                case LINE:
+                    currentHighlighter = lineView;
+                    break;
+                case POINTER:
+                    currentHighlighter = pointerView;
+                    break;
+                case LIGHT_ZONE:
+                    currentHighlighter = lighterView;
+                    break;
+            }
+        } else {
+            currentHighlighter = null;
+            stopHighlighterFollow();
+        }
+
+        lineView.setVisibility(View.GONE);
+        pointerView.setVisibility(View.GONE);
+        lighterView.setVisibility(View.GONE);
+
+        if (currentHighlighter != null) {
+            currentHighlighter.setVisibility(View.VISIBLE);
+            if (uiConfig.isCurrentWordHighlightFollow()) {
+                startHighlighterFollow();
+            } else {
+                stopHighlighterFollow();
+                currentHighlighter.setY(uiConfig.isMirrorText() ? (
+                        recyclerView.getHeight() - currentHighlighter.getHeight()) * (uiConfig.getHighlightHeight()) :
+                        (recyclerView.getHeight() - currentHighlighter.getHeight()) * (1 - uiConfig.getHighlightHeight()));
+                Log.i("SETTINGS", uiConfig.getHighlightHeight() + " " + currentHighlighter.getHeight());
+            }
+        }
+    }
+
     private void showInputDialog(String title, String initialText, OnTextEnteredListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(title);
@@ -241,7 +329,7 @@ public class TextViewerFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        stopFollowingWord();
+        stopScrollingToWord();
         super.onDestroy();
     }
 }

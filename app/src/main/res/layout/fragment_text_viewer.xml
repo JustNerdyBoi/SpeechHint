@@ -8,9 +8,39 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/lighterView"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="1sp"
+        android:background="@color/stringLighter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/lineView"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="4dp"
+        android:background="@color/red"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/pointerView"
+        android:visibility="gone"
+        android:layout_width="8dp"
+        android:layout_height="1sp"
+        android:background="@color/red"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
