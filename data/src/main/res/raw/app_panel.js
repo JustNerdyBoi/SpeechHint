@@ -32,7 +32,8 @@ const translations = {
         pointer: "Pointer",
         lightZone: "Light Zone",
         currentWordHighlightFollow: "Highlight current word",
-        highlightHeight: "Highlight height"
+        highlightHeight: "Highlight height",
+        button: "Remote access"
     },
     ru: {
         title: "Панель управления телесуфлером",
@@ -66,7 +67,8 @@ const translations = {
         pointer: "Указатель",
         lightZone: "Подсветка",
         currentWordHighlightFollow: "Смещать выделение за последним словом",
-        highlightHeight: "Высота подсветки"
+        highlightHeight: "Высота подсветки",
+        button: "Удалённый доступ"
     }
 };
 
