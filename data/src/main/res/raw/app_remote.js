@@ -5,14 +5,16 @@ const translations = {
         scrollSettings: "Scroll Settings",
         speedStep: "Speed Step (dp/s)",
         scrollStep: "Scroll Step (screen)",
-        inverseScroll: "Inverse Scroll"
+        inverseScroll: "Inverse Scroll",
+        button: "Control Panel"
     },
     ru: {
         settings: "Настройки",
         scrollSettings: "Настройки прокрутки",
         speedStep: "Шаг скорости (dp/s)",
         scrollStep: "Шаг прокрутки (экран)",
-        inverseScroll: "Инвертировать прокрутку"
+        inverseScroll: "Инвертировать прокрутку",
+        button: "Панель управления"
     }
 };
 
