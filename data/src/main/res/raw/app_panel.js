@@ -109,6 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function loadLanguage(){
+    return document.cookie.split(';').find(e=>e.trim().startsWith('lang='))?.split('=')[1]||null
+}
+
 // Core functions
 function renderWords() {
     textDisplay.innerHTML = '';
@@ -328,6 +332,7 @@ function setupSliders() {
 }
 
 function changeLanguage(lang) {
+    document.cookie=`lang=${lang};path=/;max-age=999999999`
     currentLanguage = lang;
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
