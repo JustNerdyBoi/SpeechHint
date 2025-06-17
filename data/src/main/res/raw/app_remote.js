@@ -38,6 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
     startPolling();
 });
 
+function loadLanguage(){
+    return document.cookie.split(';').find(e=>e.trim().startsWith('lang='))?.split('=')[1]||null
+}
+
 // Core functions
 function loadSettings() {
     fetch('/settings/get/')
@@ -161,6 +165,7 @@ function closeSettings() {
 
 // Language functions
 function changeLanguage(lang) {
+    document.cookie=`lang=${lang};path=/;max-age=999999999`
     currentLanguage = lang;
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
