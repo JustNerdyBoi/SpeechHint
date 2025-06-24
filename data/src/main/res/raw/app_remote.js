@@ -19,6 +19,7 @@ const translations = {
 };
 
 let currentLanguage = 'en';
+
 let settings = {
     speedStep: 100,
     scrollStep: 0.5,
@@ -26,24 +27,43 @@ let settings = {
 };
 
 let currentSettings = {
-                          scrollConfig: { autoScroll: true, speed: 270.0 },
-                          sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
-                          uiConfig: { currentStringHighlight: false, highlightType: "LINE", highlightHeight: 0.5, currentWordHighlightFollow:true, mirrorText: false, textScale: 85, theme: "DARK" }
-                      };
+    scrollConfig: { autoScroll: true, speed: 270.0 },
+    sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
+    uiConfig: { currentStringHighlight: false, highlightType: "LINE", highlightHeight: 0.5, currentWordHighlightFollow: true, mirrorText: false, textScale: 85, theme: "DARK" }
+};
 
-// Initialize
+// Init
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     setupSliders();
     startPolling();
 });
 
-function loadLanguage(){
-    return document.cookie.split(';').find(e=>e.trim().startsWith('lang='))?.split('=')[1]||null
+// Cookie helpers
+function saveSettingsToCookie() {
+    document.cookie = `scrollSettings=${encodeURIComponent(JSON.stringify(settings))}; path=/; max-age=999999999`;
+}
+
+function loadSettingsFromCookie() {
+    const cookie = document.cookie.split(';').find(c => c.trim().startsWith('scrollSettings='));
+    if (cookie) {
+        try {
+            settings = JSON.parse(decodeURIComponent(cookie.split('=')[1]));
+        } catch (e) {
+            console.error('Error parsing settings from cookie:', e);
+        }
+    }
+}
+
+// Load language
+function loadLanguage() {
+    return document.cookie.split(';').find(e => e.trim().startsWith('lang='))?.split('=')[1] || null;
 }
 
 // Core functions
 function loadSettings() {
+    loadSettingsFromCookie();
+
     fetch('/settings/get/')
         .then(response => response.json())
         .then(data => {
@@ -63,6 +83,7 @@ function updateSettings() {
         scrollStep: parseFloat(document.getElementById('scrollStep').value),
         inverseScroll: document.getElementById('inverseScroll').checked
     };
+    saveSettingsToCookie();
     updateSettingsUI();
 }
 
@@ -76,23 +97,13 @@ function updateSettingsUI() {
 }
 
 function updateControlButtons() {
-    // Update pause button
     const pauseButton = document.querySelector('.control-button.pause');
     const pauseIcon = pauseButton.querySelector('i');
     pauseIcon.className = currentSettings.scrollConfig.autoScroll ? 'fas fa-pause' : 'fas fa-play';
-    if (currentSettings.scrollConfig.autoScroll) {
-        pauseButton.classList.add('active');
-    } else {
-        pauseButton.classList.remove('active');
-    }
+    pauseButton.classList.toggle('active', currentSettings.scrollConfig.autoScroll);
 
-    // Update STT button
     const sttButton = document.querySelector('.control-button.stt');
-    if (currentSettings.sttConfig.sttEnabled) {
-        sttButton.classList.add('active');
-    } else {
-        sttButton.classList.remove('active');
-    }
+    sttButton.classList.toggle('active', currentSettings.sttConfig.sttEnabled);
 }
 
 function setupSliders() {
@@ -154,7 +165,7 @@ function scrollDown() {
     }).catch(error => console.error('Error scrolling down:', error));
 }
 
-// Modal functions
+// Modal
 function openSettings() {
     document.getElementById('settingsModal').style.display = 'block';
 }
@@ -163,9 +174,9 @@ function closeSettings() {
     document.getElementById('settingsModal').style.display = 'none';
 }
 
-// Language functions
+// Language
 function changeLanguage(lang) {
-    document.cookie=`lang=${lang};path=/;max-age=999999999`
+    document.cookie = `lang=${lang};path=/;max-age=999999999`;
     currentLanguage = lang;
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
@@ -188,4 +199,4 @@ window.onclick = event => {
     if (event.target === modal) {
         closeSettings();
     }
-}; 
+};
