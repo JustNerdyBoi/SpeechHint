@@ -147,22 +147,23 @@ function sendSettings() {
     }).catch(error => console.error('Error updating settings:', error));
 }
 
-function scrollUp() {
-    const scrollAmount = settings.inverseScroll ? settings.scrollStep : -settings.scrollStep;
+function scroll(direction) {
+    const multiplier = (direction === 'up') ? 1 : -1;
+    const scrollAmount = settings.inverseScroll ? -multiplier * settings.scrollStep : multiplier * settings.scrollStep;
+
     fetch('/scroll/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ scroll: scrollAmount })
-    }).catch(error => console.error('Error scrolling up:', error));
+    }).catch(error => console.error(`Error scrolling ${direction}:`, error));
+}
+
+function scrollUp() {
+    scroll('up');
 }
 
 function scrollDown() {
-    const scrollAmount = settings.inverseScroll ? -settings.scrollStep : settings.scrollStep;
-    fetch('/scroll/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scroll: scrollAmount })
-    }).catch(error => console.error('Error scrolling down:', error));
+    scroll('down');
 }
 
 // Modal
