@@ -1,5 +1,7 @@
 package ru.application.domain.entity;
 
+import ru.application.domain.constants.DefaultConfigs;
+
 public class SttConfig {
     private boolean sttEnabled;
     private int sttBeforeBufferSize;
@@ -31,9 +33,9 @@ public class SttConfig {
 
     public static SttConfig defaultConfig() {
         SttConfig config = new SttConfig();
-        config.setSttEnabled(false);
-        config.setSttBeforeBufferSize(5);
-        config.setSttAfterBufferSize(10);
+        config.setSttEnabled(DefaultConfigs.DEFAULT_STT_ENABLED);
+        config.setSttBeforeBufferSize(DefaultConfigs.DEFAULT_STT_BEFORE_BUFFER_SIZE);
+        config.setSttAfterBufferSize(DefaultConfigs.DEFAULT_STT_AFTER_BUFFER_SIZE);
         return config;
     }
 }

@@ -1,5 +1,7 @@
 package ru.application.domain.entity;
 
+import ru.application.domain.constants.DefaultConfigs;
+
 public class UIConfig {
     private Theme theme;
     private boolean currentStringHighlight;
@@ -33,18 +35,6 @@ public class UIConfig {
         this.textScale = textScale;
     }
 
-    public static UIConfig defaultConfig() {
-        UIConfig config = new UIConfig();
-        config.setCurrentStringHighlight(false);
-        config.setHighlightType(HighlightType.LINE);
-        config.setHighlightHeight(0.5f);
-        config.setCurrentWordHighlightFollow(true);
-        config.setMirrorText(false);
-        config.setTheme(Theme.DARK);
-        config.setTextScale(20);
-        return config;
-    }
-
     public boolean isMirrorText() {
         return mirrorText;
     }
@@ -75,5 +65,17 @@ public class UIConfig {
 
     public void setHighlightHeight(float highlightHeight) {
         this.highlightHeight = highlightHeight;
+    }
+
+    public static UIConfig defaultConfig() {
+        UIConfig config = new UIConfig();
+        config.setCurrentStringHighlight(DefaultConfigs.DEFAULT_CURRENT_STRING_HIGHLIGHT);
+        config.setHighlightType(DefaultConfigs.DEFAULT_HIGHLIGHT_TYPE);
+        config.setHighlightHeight(DefaultConfigs.DEFAULT_HIGHLIGHT_HEIGHT);
+        config.setCurrentWordHighlightFollow(DefaultConfigs.DEFAULT_CURRENT_WORD_HIGHLIGHT_FOLLOW);
+        config.setMirrorText(DefaultConfigs.DEFAULT_MIRROR_TEXT);
+        config.setTheme(DefaultConfigs.DEFAULT_THEME);
+        config.setTextScale(DefaultConfigs.DEFAULT_TEXT_SCALE);
+        return config;
     }
 }

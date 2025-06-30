@@ -30,7 +30,7 @@ public class GoogleDriveDataSource {
         String fileId = extractId(googleDriveLink);
 
         // Construct direct download URL
-        String directUrl = "https://drive.google.com/uc?export=download&id=" + fileId + "&export=download&authuser=0";  // TODO: fix links to TXT, somehow returns HTML
+        String directUrl = "https://drive.google.com/uc?export=download&id=" + fileId + "&export=download&authuser=0";
 
         Log.i("directUrlLog", directUrl);
 
