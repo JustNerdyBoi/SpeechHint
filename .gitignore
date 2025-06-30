@@ -1,15 +1,29 @@
+# IDE files and project-specific settings (user-specific)
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+*.ipr
+*.iws
+
+# Gradle files and directories (build system)
+.gradle/
+build/ # This is the main directory for all compiled output and intermediate files
+
+# Common compiled outputs and artifacts
+*.apk
+*.aab
+*.ap_ # Intermediate Android package
+*.dex # Dalvik Executable files
+*.class # Java/Kotlin compiled bytecode
+
+# Log files
+*.log
+
+# Test reports and results
+build/reports/
+build/test-results/
+build/outputs/androidTest-results/
+build/outputs/connected_android_test_additional_output/
+
+# Android Profiler files
+*.hprof # Heap dumps
+*.snapshot # CPU profiler snapshots
