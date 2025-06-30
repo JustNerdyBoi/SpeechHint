@@ -2,18 +2,16 @@ package ru.application.speechhint.di;
 
 import android.content.Context;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
-
-import javax.inject.Singleton;
-
+import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.LocalDataSource;
 import ru.application.data.datasource.PreferencesDataSource;
-import ru.application.data.datasource.ServerDataSource;
-import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
 
 @Module
@@ -24,12 +22,6 @@ public class DataSourceModule {
     @Singleton
     public LocalDataSource provideLocalDataSource(@ApplicationContext Context context) {
         return new LocalDataSource(context);
-    }
-
-    @Provides
-    @Singleton
-    public ServerDataSource provideServerDataSource(@ApplicationContext Context context) {
-        return new ServerDataSource(context);
     }
 
     @Provides

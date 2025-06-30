@@ -2,18 +2,21 @@ package ru.application.data.utils;
 
 import android.util.Log;
 
-import ru.application.domain.entity.Document;
-import ru.application.domain.entity.Word;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.apache.poi.xwpf.usermodel.*;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -22,6 +25,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+
+import ru.application.domain.entity.Document;
+import ru.application.domain.entity.Word;
 
 
 /**
@@ -39,13 +45,14 @@ import javax.xml.xpath.XPathFactory;
  * </p>
  */
 public class DocumentParser {
-    private final static String wordSeparatorRegex = "\\s+";
-    private final static String newLineRegex = "\n";
-    private final static String newLineWord = "\n";
+    private final static int BUFFER_SIZE = 1024;
+    private final static String WORD_SEPARATOR_REGEX = "\\s+";
+    private final static String NEW_LINE_REGEX = "\n";
+    private final static String NEW_LINE_WORD = "\n";
 
     public static Document parse(InputStream is) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[BUFFER_SIZE];
         int len;
         while ((len = is.read(buffer)) != -1) {
             baos.write(buffer, 0, len);
@@ -72,15 +79,15 @@ public class DocumentParser {
         XWPFDocument document = new XWPFDocument(inputStream);
 
         for (XWPFParagraph paragraph : document.getParagraphs()) {
-            String[] lines = paragraph.getText().split(newLineRegex); // Find line breaks within a paragraph
+            String[] lines = paragraph.getText().split(NEW_LINE_REGEX); // Find line breaks within a paragraph
             for (String line : lines) {
-                String[] textWords = line.split(wordSeparatorRegex);
+                String[] textWords = line.split(WORD_SEPARATOR_REGEX);
                 for (String textWord : textWords) {
                     if (!textWord.trim().isEmpty()) {
                         words.add(new Word(textWord));
                     }
                 }
-                words.add(new Word(newLineWord));
+                words.add(new Word(NEW_LINE_WORD));
             }
         }
 
@@ -141,10 +148,10 @@ public class DocumentParser {
             for (int j = 0; j < lines.getLength(); j++) {
                 Node line = lines.item(j);
                 String lineText = line.getTextContent();
-                for (String word : lineText.split(wordSeparatorRegex)) {
+                for (String word : lineText.split(WORD_SEPARATOR_REGEX)) {
                     if (!word.isEmpty()) words.add(new Word(word));
                 }
-                words.add(new Word(newLineWord));
+                words.add(new Word(NEW_LINE_WORD));
             }
         }
 
@@ -159,7 +166,7 @@ public class DocumentParser {
         String line;
 
         while ((line = reader.readLine()) != null) {
-            String[] textWords = line.split(wordSeparatorRegex);
+            String[] textWords = line.split(WORD_SEPARATOR_REGEX);
             for (String textWord : textWords) {
                 if (!textWord.trim().isEmpty()) {
                     words.add(new Word(textWord));

@@ -12,7 +12,6 @@ import dagger.hilt.components.SingletonComponent;
 import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.LocalDataSource;
 import ru.application.data.datasource.PreferencesDataSource;
-import ru.application.data.datasource.ServerDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
 import ru.application.data.repository.DocumentRepositoryImpl;
 import ru.application.data.repository.ServerRepositoryImpl;
@@ -32,14 +31,12 @@ public class RepositoryModule {
     public DocumentRepository provideDocumentRepository(
             LocalDataSource localDataSource,
             GoogleDriveDataSource googleDriveDataSource,
-            YandexDriveDataSource yandexDriveDataSource,
-            ServerDataSource serverDataSource
+            YandexDriveDataSource yandexDriveDataSource
     ) {
         return new DocumentRepositoryImpl(
                 localDataSource,
                 googleDriveDataSource,
-                yandexDriveDataSource,
-                serverDataSource
+                yandexDriveDataSource
         );
     }
 

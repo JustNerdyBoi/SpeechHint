@@ -15,8 +15,10 @@ import ru.application.domain.entity.Document;
 
 public class YandexDriveDataSource {
 
+    public static final String YANDEX_BASIC_DOWNLOAD_LINK = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=";
+
     public Document loadDocument(String yandexPublicLink) throws Exception {
-        String apiUrl = "https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key=" + URLEncoder.encode(yandexPublicLink, StandardCharsets.UTF_8);
+        String apiUrl = YANDEX_BASIC_DOWNLOAD_LINK + URLEncoder.encode(yandexPublicLink, StandardCharsets.UTF_8);
         HttpURLConnection conn = (HttpURLConnection) new URL(apiUrl).openConnection();
         conn.setRequestMethod("GET");
 
@@ -26,11 +28,9 @@ public class YandexDriveDataSource {
         while ((line = reader.readLine()) != null) sb.append(line);
         reader.close();
 
-        // Parse href from JSON
         JSONObject json = new JSONObject(sb.toString());
         String downloadUrl = json.getString("href");
-
-        // Step 2: Open InputStream to the file
+        
         InputStream is = new URL(downloadUrl).openStream();
 
         return DocumentParser.parse(is);

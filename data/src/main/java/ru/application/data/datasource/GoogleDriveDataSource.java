@@ -1,16 +1,20 @@
 package ru.application.data.datasource;
 
-import android.util.Log;
-
-import ru.application.data.utils.DocumentParser;
-import ru.application.domain.entity.Document;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.application.data.utils.DocumentParser;
+import ru.application.domain.entity.Document;
+
 public class GoogleDriveDataSource {
+
+    public static final String GOOGLE_BASIC_DOWNLOAD_LINK = "https://drive.google.com/uc?export=download&id=";
+    public static final String GOOGLE_DOWNLOAD_POSTFIX = "&export=download&authuser=0";
+    public static final String ID_FILTER_REGEX = "/(document|file|spreadsheets|presentation)/d/([a-zA-Z0-9-_]+)";
+
+
     public static String extractId(String url) {
         String regex = "/d/([a-zA-Z0-9-_]+)";
         Pattern pattern = Pattern.compile(regex);
@@ -18,8 +22,7 @@ public class GoogleDriveDataSource {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        regex = "/(document|file|spreadsheets|presentation)/d/([a-zA-Z0-9-_]+)";
-        pattern = Pattern.compile(regex);
+        pattern = Pattern.compile(ID_FILTER_REGEX);
         matcher = pattern.matcher(url);
         if (matcher.find()) {
             return matcher.group(2);
@@ -29,13 +32,8 @@ public class GoogleDriveDataSource {
     public Document loadDocument(String googleDriveLink) throws Exception {
         String fileId = extractId(googleDriveLink);
 
-        // Construct direct download URL
-        String directUrl = "https://drive.google.com/uc?export=download&id=" + fileId + "&export=download&authuser=0";
+        String directUrl = GOOGLE_BASIC_DOWNLOAD_LINK + fileId + GOOGLE_DOWNLOAD_POSTFIX;
 
-        Log.i("directUrlLog", directUrl);
-
-
-        // Open InputStream to the file
         InputStream is = new URL(directUrl).openStream();
 
         return DocumentParser.parse(is);
