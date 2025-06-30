@@ -97,8 +97,7 @@ public class TeleprompterViewModel extends ViewModel {
         Integer currentPosition = currentPositionLiveData.getValue();
         if (currentPosition == null) currentPosition = 0;
         Integer newPosition = calculatePositionUseCase.execute(recognizedWord, document, currentPosition, sttConfig);
-        Log.i("SR", recognizedWord + " " + newPosition);
-        if (!newPosition.equals(currentPosition)) {
+        if (!newPosition.equals(currentPosition) && newPosition != -1) {
             currentPositionLiveData.setValue(newPosition);
         }
     }

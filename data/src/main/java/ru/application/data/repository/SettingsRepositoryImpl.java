@@ -17,7 +17,7 @@ public class SettingsRepositoryImpl implements SettingsRepository {
     }
 
     @Override
-    public void saveSettings(Settings settings) {
+    public void setSettings(Settings settings) {
         preferencesDataSource.saveSettings(settings);
     }
 }

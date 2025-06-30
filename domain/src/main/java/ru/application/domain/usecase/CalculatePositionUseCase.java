@@ -9,24 +9,24 @@ import java.util.ArrayList;
 public class CalculatePositionUseCase {
 
     /**
-     * Поиск позиции слова word в документе, начиная с currentPosition,
-     * сначала в after-буфере, затем в before-буфере.
-     * Если не найдено или найдено на currentPosition, возвращается currentPosition.
+     * Searches for the position of the word in the document, starting from currentPosition,
+     * first in the after buffer (size {@link SttConfig#getSttAfterBufferSize()}),
+     * then in the before buffer (size {@link SttConfig#getSttBeforeBufferSize()}).
      *
-     * @param word            слово для поиска
-     * @param document        документ
-     * @param currentPosition текущая позиция
-     * @param sttConfig       конфиг с размерами буферов
-     * @return позиция найденного слова или currentPosition
+     * @param word            the word to search for
+     * @param document        the document
+     * @param currentPosition the current position
+     * @param sttConfig       the config with buffer sizes
+     * @return the position of the found word or currentPosition, -1 if not found
      */
     public Integer execute(String word, Document document, Integer currentPosition, SttConfig sttConfig) {
         if (word == null || document == null || currentPosition == null || sttConfig == null) {
-            return currentPosition;
+            return -1;
         }
 
         ArrayList<Word> words = document.getWords();
         if (words == null || words.isEmpty()) {
-            return currentPosition;
+            return -1;
         }
 
         if (isWordEquals(words, currentPosition, word)) {
@@ -37,23 +37,23 @@ public class CalculatePositionUseCase {
         int beforeBuffer = sttConfig.getSttBeforeBufferSize();
         int size = words.size();
 
-        int afterStart = currentPosition + 1;
-        int afterEnd = Math.min(currentPosition + afterBuffer, size - 1);
-        for (int i = afterStart; i <= afterEnd; i++) {
+        int afterBufferStartPosition = currentPosition + 1;
+        int afterBufferEndPosition = Math.min(currentPosition + afterBuffer, size - 1);
+        for (int i = afterBufferStartPosition; i <= afterBufferEndPosition; i++) {
             if (isWordEquals(words, i, word)) {
                 return i;
             }
         }
 
-        int beforeStart = Math.max(currentPosition - beforeBuffer, 0);
-        int beforeEnd = currentPosition - 1;
-        for (int i = beforeStart; i <= beforeEnd; i++) {
+        int beforeBufferStartPosition = currentPosition - 1; // before buffer scanned in reverse order
+        int beforeBufferEndPosition = Math.max(currentPosition - beforeBuffer, 0);
+        for (int i = beforeBufferStartPosition; i >= beforeBufferEndPosition; i--) {
             if (isWordEquals(words, i, word)) {
                 return i;
             }
         }
 
-        return currentPosition;
+        return -1;
     }
 
     private boolean isWordEquals(ArrayList<Word> words, int pos, String word) {

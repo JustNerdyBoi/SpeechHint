@@ -11,6 +11,6 @@ public class SaveSettingsUseCase {
     }
 
     public void execute(Settings settings) {
-        settingsRepository.saveSettings(settings);
+        settingsRepository.setSettings(settings);
     }
 }
