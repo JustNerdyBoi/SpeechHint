@@ -14,8 +14,11 @@ import ru.application.domain.entity.Document;
 import ru.application.domain.entity.DocumentSource;
 import ru.application.domain.entity.SttConfig;
 import ru.application.domain.entity.Word;
+import ru.application.domain.usecase.AddWordUseCase;
 import ru.application.domain.usecase.CalculatePositionUseCase;
+import ru.application.domain.usecase.EditWordUseCase;
 import ru.application.domain.usecase.LoadDocumentUseCase;
+import ru.application.domain.usecase.RemoveWordUseCase;
 
 @HiltViewModel
 public class TeleprompterViewModel extends ViewModel {
@@ -23,19 +26,28 @@ public class TeleprompterViewModel extends ViewModel {
     private final MutableLiveData<Integer> currentPositionLiveData = new MutableLiveData<>(0);
     private final LoadDocumentUseCase loadDocumentUseCase;
     private final CalculatePositionUseCase calculatePositionUseCase;
+    private final AddWordUseCase addWordUseCase;
+    private final EditWordUseCase editWordUseCase;
+    private final RemoveWordUseCase removeWordUseCase;
 
     @Inject
-    public TeleprompterViewModel(LoadDocumentUseCase loadDocumentUseCase, CalculatePositionUseCase calculatePositionUseCase) {
+    public TeleprompterViewModel(LoadDocumentUseCase loadDocumentUseCase,
+                                 CalculatePositionUseCase calculatePositionUseCase,
+                                 AddWordUseCase addWordUseCase,
+                                 EditWordUseCase editWordUseCase,
+                                 RemoveWordUseCase removeWordUseCase) {
         this.loadDocumentUseCase = loadDocumentUseCase;
         this.calculatePositionUseCase = calculatePositionUseCase;
+        this.addWordUseCase = addWordUseCase;
+        this.editWordUseCase = editWordUseCase;
+        this.removeWordUseCase = removeWordUseCase;
     }
 
     public void LoadLocalDocument(Uri uri) {
         new Thread(() -> {
             try {
                 documentLiveData.postValue(loadDocumentUseCase.execute(DocumentSource.LOCAL, uri.toString()));
-            } catch (Exception e) {
-                // TODO show error message
+            } catch (Exception ignored) {
             }
         }).start();
     }
@@ -44,7 +56,7 @@ public class TeleprompterViewModel extends ViewModel {
         new Thread(() -> {
             try {
                 documentLiveData.postValue(loadDocumentUseCase.execute(DocumentSource.GOOGLE_DRIVE, shortenedUrl));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
         }).start();
@@ -54,7 +66,7 @@ public class TeleprompterViewModel extends ViewModel {
         new Thread(() -> {
             try {
                 documentLiveData.postValue(loadDocumentUseCase.execute(DocumentSource.YANDEX_DRIVE, shortenedUrl));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
         }).start();
@@ -63,24 +75,21 @@ public class TeleprompterViewModel extends ViewModel {
     public void editWord(int pos, String text) {
         Document document = documentLiveData.getValue();
         if (document != null) {
-            document.editWord(pos, text);
-            documentLiveData.setValue(document);
+            documentLiveData.setValue(editWordUseCase.execute(document, pos, text));
         }
     }
 
     public void addWord(int pos, String text) {
         Document document = documentLiveData.getValue();
         if (document != null) {
-            document.addWord(pos, new Word(text));
-            documentLiveData.setValue(document);
+            documentLiveData.setValue(addWordUseCase.execute(document, pos, text));
         }
     }
 
     public void removeWord(int pos) {
         Document document = documentLiveData.getValue();
         if (document != null) {
-            document.removeWord(pos);
-            documentLiveData.setValue(document);
+            documentLiveData.setValue(removeWordUseCase.execute(document, pos));
         }
     }
 
@@ -97,6 +106,7 @@ public class TeleprompterViewModel extends ViewModel {
     public LiveData<Document> getDocumentLiveData() {
         return documentLiveData;
     }
+
     public void setDocument(Document document) {
         documentLiveData.setValue(document);
     }

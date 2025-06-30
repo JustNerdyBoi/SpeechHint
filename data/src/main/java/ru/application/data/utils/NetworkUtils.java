@@ -4,7 +4,9 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
-
+/**
+ * Provides methods to retrieve network information such as the local IP address.
+ */
 public class NetworkUtils {
     public static String getLocalIpAddress() {
         try {

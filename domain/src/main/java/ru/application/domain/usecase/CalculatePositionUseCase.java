@@ -4,7 +4,7 @@ import ru.application.domain.entity.Document;
 import ru.application.domain.entity.SttConfig;
 import ru.application.domain.entity.Word;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class CalculatePositionUseCase {
 
@@ -24,7 +24,7 @@ public class CalculatePositionUseCase {
             return currentPosition;
         }
 
-        LinkedList<Word> words = document.getWords();
+        ArrayList<Word> words = document.getWords();
         if (words == null || words.isEmpty()) {
             return currentPosition;
         }
@@ -56,7 +56,7 @@ public class CalculatePositionUseCase {
         return currentPosition;
     }
 
-    private boolean isWordEquals(LinkedList<Word> words, int pos, String word) {
+    private boolean isWordEquals(ArrayList<Word> words, int pos, String word) {
         if (pos < 0 || pos >= words.size()) return false;
         return words.get(pos).getText().toLowerCase().contains(word.toLowerCase());
     }

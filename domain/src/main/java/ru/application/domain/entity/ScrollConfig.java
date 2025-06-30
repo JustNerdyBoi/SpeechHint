@@ -2,8 +2,7 @@ package ru.application.domain.entity;
 
 public class ScrollConfig {
     private float speed;
-    private boolean autoScroll; // false = stop, true = scroll
-
+    private boolean enableAutoScroll;
     public float getSpeed() {
         return speed;
     }
@@ -12,17 +11,17 @@ public class ScrollConfig {
         this.speed = speed;
     }
 
-    public boolean isAutoScroll() {
-        return autoScroll;
+    public boolean isEnableAutoScroll() {
+        return enableAutoScroll;
     }
 
-    public void setAutoScroll(boolean autoScroll) {
-        this.autoScroll = autoScroll;
+    public void setEnableAutoScroll(boolean enableAutoScroll) {
+        this.enableAutoScroll = enableAutoScroll;
     }
 
     public static ScrollConfig defaultConfig() {
         ScrollConfig config = new ScrollConfig();
-        config.setAutoScroll(false);
+        config.setEnableAutoScroll(false);
         config.setSpeed(100.0f);
         return config;
     }

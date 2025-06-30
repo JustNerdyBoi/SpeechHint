@@ -1,34 +1,16 @@
 package ru.application.domain.entity;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Document {
-    private LinkedList<Word> words;
-    public LinkedList<Word> getWords() {
-        return words;
-    }
+    private final ArrayList<Word> words;
 
-    public void addWord(int pos, Word word){
-        if (pos < 0) return;
-        if (pos > words.size() - 1) {
-            words.addLast(word);
-            return;
-        }
-        words.add(pos, word);
-    }
-
-    public void editWord(int pos, String word){
-        if (pos < 0 || pos > words.size() - 1) return;
-        words.get(pos).setText(word);
-    }
-
-    public void removeWord(int pos) {
-        if (pos < 0 || pos > words.size() - 1) return;
-        words.remove(pos);
-    }
-
-    public void setWords(LinkedList<Word> words) {
+    public Document(ArrayList<Word> words) {
         this.words = words;
+    }
+
+    public ArrayList<Word> getWords() {
+        return words;
     }
     public String toString() {
         StringBuilder sb = new StringBuilder();

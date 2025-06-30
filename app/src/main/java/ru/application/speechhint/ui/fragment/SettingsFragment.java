@@ -134,7 +134,7 @@ public class SettingsFragment extends Fragment {
 
         // ScrollConfig
         ScrollConfig scroll = settings.getScrollConfig();
-        autoScrollSwitch.setChecked(scroll.isAutoScroll());
+        autoScrollSwitch.setChecked(scroll.isEnableAutoScroll());
         autoscrollSpeedSeekBar.setProgress((int) scroll.getSpeed());
         autoscrollSpeedValue.setText(String.valueOf((int) scroll.getSpeed()));
 
@@ -146,8 +146,8 @@ public class SettingsFragment extends Fragment {
         afterBufferSizeSeekBar.setProgress(stt.getSttAfterBufferSize());
         afterBufferSizeValue.setText(String.valueOf(stt.getSttAfterBufferSize()));
 
-        setSttConfigAvailability(scroll.isAutoScroll(), stt.isSttEnabled());
-        setUseSttSwitchDependenciesAvailability(stt.isSttEnabled(), scroll.isAutoScroll());
+        setSttConfigAvailability(scroll.isEnableAutoScroll(), stt.isSttEnabled());
+        setUseSttSwitchDependenciesAvailability(stt.isSttEnabled(), scroll.isEnableAutoScroll());
         setHighlightControlsAvailability(ui.isCurrentStringHighlight());
 
         isInternalUpdate = false;
@@ -287,7 +287,7 @@ public class SettingsFragment extends Fragment {
         if (settings == null) return;
         ScrollConfig scroll = settings.getScrollConfig();
         boolean autoScroll = autoScrollSwitch.isChecked();
-        scroll.setAutoScroll(autoScroll);
+        scroll.setEnableAutoScroll(autoScroll);
         scroll.setSpeed(autoscrollSpeedSeekBar.getProgress());
         viewModel.saveSettings(settings);
     }

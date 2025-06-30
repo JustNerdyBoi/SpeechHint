@@ -2,6 +2,7 @@ package ru.application.data.datasource;
 
 import android.util.Log;
 
+import ru.application.data.utils.DocumentParser;
 import ru.application.domain.entity.Document;
 
 import java.io.InputStream;

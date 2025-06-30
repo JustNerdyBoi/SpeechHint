@@ -9,17 +9,19 @@ import com.google.gson.JsonParser;
 
 import fi.iki.elonen.NanoHTTPD;
 import ru.application.data.R;
-import ru.application.data.datasource.DocumentParser;
+import ru.application.data.utils.DocumentParser;
 import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
 import ru.application.domain.entity.Document;
 import ru.application.domain.entity.Settings;
+import ru.application.domain.entity.Word;
 import ru.application.domain.repository.ServerRepository;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,7 +66,7 @@ public class RestServer extends NanoHTTPD {
                     case "/remote/app_remote.js":
                         return newFixedLengthResponse(Response.Status.OK, "application/javascript; charset=UTF-8", loadFileFromRaw(context, R.raw.app_remote));
                     case "/document/get/":
-                        return newFixedLengthResponse(Response.Status.OK, "text/plain", currentDocument == null ? gson.toJson(new Document()) : gson.toJson(currentDocument));
+                        return newFixedLengthResponse(Response.Status.OK, "text/plain", currentDocument == null ? gson.toJson(new Document(new ArrayList<Word>())) : gson.toJson(currentDocument));
                     case "/settings/get/":
                         return newFixedLengthResponse(Response.Status.OK, "application/json; charset=UTF-8", gson.toJson(currentSettings));
                     case "/position/get/":

@@ -8,10 +8,13 @@ import ru.application.domain.repository.DocumentRepository;
 import ru.application.domain.repository.ServerRepository;
 import ru.application.domain.repository.SettingsRepository;
 import ru.application.domain.repository.SpeechRecognitionRepository;
+import ru.application.domain.usecase.AddWordUseCase;
 import ru.application.domain.usecase.CalculatePositionUseCase;
+import ru.application.domain.usecase.EditWordUseCase;
 import ru.application.domain.usecase.GetServerConnectionInfoUseCase;
 import ru.application.domain.usecase.GetSettingsUseCase;
 import ru.application.domain.usecase.LoadDocumentUseCase;
+import ru.application.domain.usecase.RemoveWordUseCase;
 import ru.application.domain.usecase.SaveSettingsUseCase;
 import ru.application.domain.usecase.SetServerCurrentDocumentUseCase;
 import ru.application.domain.usecase.SetServerCurrentPositionUseCase;
@@ -77,5 +80,20 @@ public class UseCaseModule {
     @Provides
     public SetServerCurrentDocumentUseCase provideSetServerCurrentDocumentUseCase(ServerRepository repository){
         return new SetServerCurrentDocumentUseCase(repository);
+    }
+
+    @Provides
+    public AddWordUseCase provideAddWordUseCase(){
+        return new AddWordUseCase();
+    }
+
+    @Provides
+    public EditWordUseCase provideEditWordUseCase(){
+        return new EditWordUseCase();
+    }
+
+    @Provides
+    public RemoveWordUseCase provideRemoveWordUseCase(){
+        return new RemoveWordUseCase();
     }
 }

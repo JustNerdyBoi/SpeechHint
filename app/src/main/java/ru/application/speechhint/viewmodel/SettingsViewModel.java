@@ -41,7 +41,7 @@ public class SettingsViewModel extends ViewModel {
 
     //@debug TODO: debug method, remove after testing
     public void logSettings(){
-        Log.i("SETTINGS", "SCROLL CONFIG: " + settingsLiveData.getValue().getScrollConfig().isAutoScroll() + " " + settingsLiveData.getValue().getScrollConfig().getSpeed());
+        Log.i("SETTINGS", "SCROLL CONFIG: " + settingsLiveData.getValue().getScrollConfig().isEnableAutoScroll() + " " + settingsLiveData.getValue().getScrollConfig().getSpeed());
         Log.i("SETTINGS", "STT CONFIG: " + settingsLiveData.getValue().getSttConfig().isSttEnabled() + " " + settingsLiveData.getValue().getSttConfig().getSttBeforeBufferSize() + " " + settingsLiveData.getValue().getSttConfig().getSttAfterBufferSize());
         Log.i("SETTINGS", "UI CONFIG: " + settingsLiveData.getValue().getUiConfig().getTheme() + " " + settingsLiveData.getValue().getUiConfig().getTextScale() + " " + settingsLiveData.getValue().getUiConfig().isCurrentStringHighlight());
     }

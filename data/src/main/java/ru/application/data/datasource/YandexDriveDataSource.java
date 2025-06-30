@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import ru.application.data.utils.DocumentParser;
 import ru.application.domain.entity.Document;
 
 public class YandexDriveDataSource {

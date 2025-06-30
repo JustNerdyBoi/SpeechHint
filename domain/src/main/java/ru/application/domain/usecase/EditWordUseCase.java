@@ -1,0 +1,17 @@
+package ru.application.domain.usecase;
+
+import java.util.ArrayList;
+
+import ru.application.domain.entity.Document;
+import ru.application.domain.entity.Word;
+
+public class EditWordUseCase {
+    public Document execute(Document oldDocument, int pos, String text) {
+        ArrayList<Word> words = oldDocument.getWords();
+
+        if (pos < 0 || pos > words.size() - 1) return oldDocument;
+        words.set(pos, new Word(text));
+
+        return new Document(words);
+    }
+}

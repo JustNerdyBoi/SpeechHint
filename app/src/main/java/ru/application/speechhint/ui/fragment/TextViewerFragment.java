@@ -106,7 +106,7 @@ public class TextViewerFragment extends Fragment {
                 recyclerView.setScaleY(1);
             }
 
-            if (settings.getScrollConfig().isAutoScroll()) {
+            if (settings.getScrollConfig().isEnableAutoScroll()) {
                 if (settings.getSttConfig().isSttEnabled()) {
                     scroller.startScrolling(0);
                     speechRecognitionViewModel.startSpeechRecognition();
