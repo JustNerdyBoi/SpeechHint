@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class WordWallLayoutManager extends RecyclerView.LayoutManager {
 
-    private int totalHeight = 0;      // Общая высота контента
-    private int scrollOffsetY = 0;    // Текущее смещение
+    private int totalHeight = 0;
+    private int scrollOffsetY = 0;
 
     private static final double EXTRA_LINE_SPACE = 1.0;
     private static final double LINE_SPACE = 0.7;
@@ -70,7 +70,6 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
             int w = getDecoratedMeasuredWidth(view);
             int h = getDecoratedMeasuredHeight(view);
 
-            // Принудительный перенос строки, если слово == "\n"
             if (view.getVisibility() == View.GONE) {
                 if (maxHeightInLine != 0) {
                     curTop += (int) (maxHeightInLine * EXTRA_LINE_SPACE);
@@ -81,7 +80,6 @@ public class WordWallLayoutManager extends RecyclerView.LayoutManager {
                 continue;
             }
 
-            // Если не помещается — перенос строки
             if (curLeft + w > width - getPaddingRight()) {
                 curLeft = getPaddingLeft();
                 curTop += (int) (maxHeightInLine * LINE_SPACE);

@@ -330,6 +330,7 @@ public class TextViewerFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        speechRecognitionViewModel.stopSpeechRecognition();
         stopScrollingToWord();
         stopHighlighterFollow();
         super.onDestroy();
