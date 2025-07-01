@@ -3,6 +3,7 @@ package ru.application.speechhint.ui.fragment;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Choreographer;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -262,9 +263,9 @@ public class TextViewerFragment extends Fragment {
         if (wordView == null) return;
 
         if (settingsViewModel.getSettingsLiveData().getValue().getUiConfig().isMirrorText()) {
-            currentHighlighter.setY(recyclerView.getHeight() - wordView.getY() - textScale * (currentHighlighter == lineView ? 2.5f : 1.75f));
+            currentHighlighter.setY(recyclerView.getHeight() - (wordView.getY() + spToPx(textScale) + (currentHighlighter == lineView ? currentHighlighter.getHeight() * 2 : 0)));
         } else {
-            currentHighlighter.setY(wordView.getY() + textScale * (currentHighlighter == lineView ? 2.5f : 1.75f));
+            currentHighlighter.setY(wordView.getY() + spToPx(textScale) + (currentHighlighter == lineView ? currentHighlighter.getHeight() : -currentHighlighter.getHeight() * currentHighlighter.getScaleY() * 0.1f));
         }
     }
 
@@ -330,6 +331,11 @@ public class TextViewerFragment extends Fragment {
     @Override
     public void onDestroy() {
         stopScrollingToWord();
+        stopHighlighterFollow();
         super.onDestroy();
+    }
+
+    public int spToPx(float sp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, recyclerView.getResources().getDisplayMetrics());
     }
 }
