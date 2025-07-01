@@ -30,4 +30,5 @@
     <string name="settings_highlight_light_zone">Light zone</string>
     <string name="settings_highlight_follow">Highlight current word</string>
     <string name="settings_highlight_height">Highlight height</string>
+    <string name="set_document_button">Set Document</string>
 </resources>

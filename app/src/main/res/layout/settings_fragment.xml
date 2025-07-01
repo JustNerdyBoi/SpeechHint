@@ -27,5 +27,11 @@
         <!-- SttConfig Module -->
         <include layout="@layout/module_stt_config"/>
 
+        <Button
+            android:id="@+id/setDocumentButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/set_document_button" />
+
     </LinearLayout>
 </ScrollView>
