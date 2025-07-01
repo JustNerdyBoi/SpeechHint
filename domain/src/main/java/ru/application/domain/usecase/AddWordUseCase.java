@@ -16,6 +16,6 @@ public class AddWordUseCase {
         }
         words.add(pos, new Word(text));
 
-        return new Document(words);
+        return new Document(words, oldDocument.getLanguage());
     }
 }

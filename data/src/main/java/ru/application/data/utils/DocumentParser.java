@@ -50,7 +50,7 @@ public class DocumentParser {
     private static final String WORD_SEPARATOR_REGEX = "\\s+";
     private static final String NEW_LINE_REGEX = "\n";
     private static final String NEW_LINE_WORD = "\n";
-    private static final Map<String, Function<byte[], Document>> PARSERS = new HashMap<>();
+    private static final Map<String, Function<byte[], ArrayList<Word>>> PARSERS = new HashMap<>();
 
     static {
         PARSERS.put("txt", exceptionHandler(data -> parseTxt(new ByteArrayInputStream(data))));
@@ -58,7 +58,7 @@ public class DocumentParser {
         PARSERS.put("odt", exceptionHandler(data -> parseOdt(new ByteArrayInputStream(data))));
     }
 
-    private static Function<byte[], Document> exceptionHandler(ThrowingFunction<byte[], Document> parser) {
+    private static Function<byte[], ArrayList<Word>> exceptionHandler(ThrowingFunction<byte[], ArrayList<Word>> parser) {
         return data -> {
             try {
                 return parser.apply(data);
@@ -83,16 +83,19 @@ public class DocumentParser {
         String extension = ExtensionReceiver.getExtensionFromInputStream(new ByteArrayInputStream(data));
         Log.i("DocumentParser", "Detected " + extension + " filetype. Starting parsing");
 
-        Function<byte[], Document> parser = PARSERS.get(extension);
+        Function<byte[], ArrayList<Word>> parser = PARSERS.get(extension);
 
         if (parser == null) {
             throw new IllegalArgumentException("Unsupported file format: " + extension);
         }
 
-        return parser.apply(data);
+        ArrayList<Word> words = parser.apply(data);
+        String language = LanguageDetector.detectLanguage(LanguageDetector.generateSample(words));
+
+        return new Document(words, language);
     }
 
-    private static Document parseDocx(InputStream inputStream) throws IOException {
+    private static ArrayList<Word> parseDocx(InputStream inputStream) throws IOException {
         ArrayList<Word> words = new ArrayList<>();
         XWPFDocument document = new XWPFDocument(inputStream);
 
@@ -110,10 +113,10 @@ public class DocumentParser {
         }
 
         document.close();
-        return new Document(words);
+        return words;
     }
 
-    private static Document parseOdt(InputStream inputStream) throws Exception {
+    private static ArrayList<Word> parseOdt(InputStream inputStream) throws Exception {
         ZipInputStream zis = new ZipInputStream(inputStream);
         org.w3c.dom.Document doc = null;
 
@@ -175,10 +178,10 @@ public class DocumentParser {
 
         zis.close();
 
-        return new Document(words);
+        return words;
     }
 
-    private static Document parseTxt(InputStream inputStream) throws IOException {
+    private static ArrayList<Word> parseTxt(InputStream inputStream) throws IOException {
         ArrayList<Word> words = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
@@ -194,6 +197,6 @@ public class DocumentParser {
         }
 
         reader.close();
-        return new Document(words);
+        return words;
     }
 }

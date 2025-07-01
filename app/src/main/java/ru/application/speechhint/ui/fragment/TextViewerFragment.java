@@ -86,6 +86,7 @@ public class TextViewerFragment extends Fragment {
                 getParentFragmentManager().beginTransaction().remove(this).commit();
             } else {
                 document = newDocument;
+                speechRecognitionViewModel.setLanguage(document.getLanguage());
                 setupRecyclerView(newDocument, textScale);
             }
         });
@@ -110,7 +111,7 @@ public class TextViewerFragment extends Fragment {
             if (settings.getScrollConfig().isEnableAutoScroll()) {
                 if (settings.getSttConfig().isSttEnabled()) {
                     scroller.startScrolling(0);
-                    speechRecognitionViewModel.startSpeechRecognition();
+                    speechRecognitionViewModel.startSpeechRecognition(document.getLanguage());
                     startScrollingToWord();
                 } else {
                     speechRecognitionViewModel.stopSpeechRecognition();

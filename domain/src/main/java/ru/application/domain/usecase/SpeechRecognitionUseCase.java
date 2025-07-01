@@ -13,6 +13,10 @@ public class SpeechRecognitionUseCase {
         repository.startRecognition(listener);
     }
 
+    public void setLanguage(String language){
+        repository.setLanguage(language);
+    }
+
     public void stop() {
         repository.stopRecognition();
     }

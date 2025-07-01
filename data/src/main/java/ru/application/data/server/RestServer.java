@@ -12,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,7 +77,7 @@ public final class RestServer extends NanoHTTPD {
             case "/remote/app_remote.js":
                 return serveFile(R.raw.app_remote, "application/javascript; charset=UTF-8");
             case "/document/get/":
-                return serveJson(currentDocument == null ? new Document(new ArrayList<>()) : currentDocument);
+                return serveJson(currentDocument == null ? new Document() : currentDocument);
             case "/settings/get/":
                 return serveJson(currentSettings);
             case "/position/get/":

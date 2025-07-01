@@ -12,6 +12,6 @@ public class RemoveWordUseCase {
         if (pos < 0 || pos > words.size() - 1) return oldDocument;
         words.remove(pos);
 
-        return new Document(words);
+        return new Document(words, oldDocument.getLanguage());
     }
 }

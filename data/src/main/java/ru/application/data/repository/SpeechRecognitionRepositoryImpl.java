@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,11 +21,12 @@ public final class SpeechRecognitionRepositoryImpl implements SpeechRecognitionR
 
     public static final int DELAY_MILLIS = 300;
     private final Context context;
+    private final Set<String> lastWordsSet = new HashSet<>();
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private SpeechRecognizer speechRecognizer;
     private Listener listener;
     private boolean isListening = false;
-    private final Set<String> lastWordsSet = new HashSet<>();
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private String language;
 
     public SpeechRecognitionRepositoryImpl(Context context) {
         this.context = context.getApplicationContext();
@@ -48,8 +50,16 @@ public final class SpeechRecognitionRepositoryImpl implements SpeechRecognitionR
     }
 
     private void startListening() {
+
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+
+        if (language != null) {
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, language);
+            intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, language);
+        }
+
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         try {
             speechRecognizer.startListening(intent);
@@ -67,6 +77,12 @@ public final class SpeechRecognitionRepositoryImpl implements SpeechRecognitionR
             } catch (Throwable ignored) {
             }
         }
+    }
+
+    @Override
+    public void setLanguage(String language) {
+        Log.i("SpeechRecognitionRepository", "Setting language: " + language);
+        this.language = language;
     }
 
     private class ContinuousRecognitionListener implements RecognitionListener {

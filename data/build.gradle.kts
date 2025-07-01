@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(libs.poi.ooxml)
     implementation(libs.gson)
+    implementation(libs.language.id)
     implementation(libs.nanohttpd)
 
     testImplementation(libs.junit)
