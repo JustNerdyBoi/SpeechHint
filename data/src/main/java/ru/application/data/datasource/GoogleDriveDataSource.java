@@ -12,20 +12,14 @@ public class GoogleDriveDataSource {
 
     public static final String GOOGLE_BASIC_DOWNLOAD_LINK = "https://drive.google.com/uc?export=download&id=";
     public static final String GOOGLE_DOWNLOAD_POSTFIX = "&export=download&authuser=0";
-    public static final String ID_FILTER_REGEX = "/(document|file|spreadsheets|presentation)/d/([a-zA-Z0-9-_]+)";
+    public static final String ID_FILTER_REGEX = "/d/([a-zA-Z0-9-_]+)";
 
 
     public static String extractId(String url) {
-        String regex = "/d/([a-zA-Z0-9-_]+)";
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(ID_FILTER_REGEX);
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
             return matcher.group(1);
-        }
-        pattern = Pattern.compile(ID_FILTER_REGEX);
-        matcher = pattern.matcher(url);
-        if (matcher.find()) {
-            return matcher.group(2);
         }
         return null;
     }

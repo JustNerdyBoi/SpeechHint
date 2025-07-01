@@ -9,9 +9,9 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import ru.application.data.datasource.FileDataSource;
 import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.LocalDataSource;
-import ru.application.data.datasource.PreferencesDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
 import ru.application.data.repository.DocumentRepositoryImpl;
 import ru.application.data.repository.ServerRepositoryImpl;
@@ -48,8 +48,8 @@ public class RepositoryModule {
 
     @Singleton
     @Provides
-    public SettingsRepository provideSettingsRepository(PreferencesDataSource preferencesDataSource){
-        return new SettingsRepositoryImpl(preferencesDataSource);
+    public SettingsRepository provideSettingsRepository(FileDataSource fileDataSource){
+        return new SettingsRepositoryImpl(fileDataSource);
     }
 
     @Provides

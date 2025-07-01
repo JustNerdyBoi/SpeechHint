@@ -13,15 +13,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import ru.application.domain.interactor.SpeechRecognitionInteractor;
 import ru.application.domain.repository.SpeechRecognitionRepository;
 
-public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionRepository {
+public final class SpeechRecognitionRepositoryImpl implements SpeechRecognitionRepository {
 
+    public static final int DELAY_MILLIS = 300;
     private final Context context;
     private SpeechRecognizer speechRecognizer;
     private Listener listener;
     private boolean isListening = false;
-    private Set<String> lastWordsSet = new HashSet<>();
+    private final Set<String> lastWordsSet = new HashSet<>();
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     public SpeechRecognitionRepositoryImpl(Context context) {
@@ -40,7 +42,7 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
     public void startRecognition(Listener listener) {
         this.listener = listener;
         isListening = true;
-        lastWordsSet = new HashSet<>();
+        lastWordsSet.clear();
         createSpeechRecognizer();
         startListening();
     }
@@ -51,8 +53,8 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         try {
             speechRecognizer.startListening(intent);
-        } catch (Exception e) {
-            if (listener != null) listener.onError(e);
+        } catch (Throwable t) {
+            if (listener != null) listener.onError(t);
         }
     }
 
@@ -62,7 +64,8 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
         if (speechRecognizer != null) {
             try {
                 speechRecognizer.stopListening();
-            } catch (Exception ignored) {}
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -86,7 +89,7 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
         @Override
         public void onEndOfSpeech() {
             if (isListening) {
-                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, 300);
+                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, DELAY_MILLIS);
             }
         }
 
@@ -97,37 +100,31 @@ public class SpeechRecognitionRepositoryImpl implements SpeechRecognitionReposit
             }
 
             if (isListening) {
-                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, 500);
+                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, DELAY_MILLIS);
             }
         }
 
         @Override
         public void onResults(Bundle results) {
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            if (matches != null && !matches.isEmpty() && listener != null) {
-                String[] words = matches.get(0).trim().split("\\s+");
-                for (String word : words) {
-                    if (!word.isEmpty() && lastWordsSet.add(word.toLowerCase())) {
-                        listener.onWordRecognized(word);
-                    }
-                }
+            String word = SpeechRecognitionInteractor.findUnduplicatedWord(matches, lastWordsSet);
+
+            if (word != null && listener != null) {
+                listener.onWordRecognized(word);
             }
 
             if (isListening) {
-                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, 300);
+                handler.postDelayed(SpeechRecognitionRepositoryImpl.this::startListening, DELAY_MILLIS);
             }
         }
 
         @Override
         public void onPartialResults(Bundle partialResults) {
             ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            if (matches != null && !matches.isEmpty() && listener != null) {
-                String[] words = matches.get(0).trim().split("\\s+");
-                for (String word : words) {
-                    if (!word.isEmpty() && lastWordsSet.add(word.toLowerCase())) {
-                        listener.onWordRecognized(word);
-                    }
-                }
+            String word = SpeechRecognitionInteractor.findUnduplicatedWord(matches, lastWordsSet);
+
+            if (word != null && listener != null) {
+                listener.onWordRecognized(word);
             }
         }
 

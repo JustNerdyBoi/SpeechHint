@@ -9,9 +9,9 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import ru.application.data.datasource.FileDataSource;
 import ru.application.data.datasource.GoogleDriveDataSource;
 import ru.application.data.datasource.LocalDataSource;
-import ru.application.data.datasource.PreferencesDataSource;
 import ru.application.data.datasource.YandexDriveDataSource;
 
 @Module
@@ -37,7 +37,7 @@ public class DataSourceModule {
 
     @Provides
     @Singleton
-    public PreferencesDataSource providePreferenceDataSource(@ApplicationContext Context context){
-        return new PreferencesDataSource(context);
+    public FileDataSource providePreferenceDataSource(@ApplicationContext Context context){
+        return new FileDataSource(context);
     }
 }

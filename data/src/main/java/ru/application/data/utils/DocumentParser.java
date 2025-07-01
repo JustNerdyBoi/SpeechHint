@@ -9,12 +9,14 @@ import org.w3c.dom.NodeList;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -45,33 +47,49 @@ import ru.application.domain.entity.Word;
  * </p>
  */
 public class DocumentParser {
-    private final static int BUFFER_SIZE = 1024;
-    private final static String WORD_SEPARATOR_REGEX = "\\s+";
-    private final static String NEW_LINE_REGEX = "\n";
-    private final static String NEW_LINE_WORD = "\n";
+    private static final String WORD_SEPARATOR_REGEX = "\\s+";
+    private static final String NEW_LINE_REGEX = "\n";
+    private static final String NEW_LINE_WORD = "\n";
+    private static final Map<String, Function<byte[], Document>> PARSERS = new HashMap<>();
+
+    static {
+        PARSERS.put("txt", exceptionHandler(data -> parseTxt(new ByteArrayInputStream(data))));
+        PARSERS.put("docx", exceptionHandler(data -> parseDocx(new ByteArrayInputStream(data))));
+        PARSERS.put("odt", exceptionHandler(data -> parseOdt(new ByteArrayInputStream(data))));
+    }
+
+    private static Function<byte[], Document> exceptionHandler(ThrowingFunction<byte[], Document> parser) {
+        return data -> {
+            try {
+                return parser.apply(data);
+            } catch (Exception e) {
+                throw new RuntimeException("Error parsing file", e);
+            }
+        };
+    }
+
+    @FunctionalInterface
+    private interface ThrowingFunction<InputArgumentType, ResultType> {
+        ResultType apply(InputArgumentType inputArgument) throws Exception;
+    }
+
 
     public static Document parse(InputStream is) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[BUFFER_SIZE];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            baos.write(buffer, 0, len);
+        byte[] data;
+        try (is) {
+            data = is.readAllBytes();
         }
-        byte[] data = baos.toByteArray();
 
         String extension = ExtensionReceiver.getExtensionFromInputStream(new ByteArrayInputStream(data));
-        Log.i("DocumentParser", "Detected " + extension + " filetype. Starting pacing");
+        Log.i("DocumentParser", "Detected " + extension + " filetype. Starting parsing");
 
-        switch (extension) {
-            case "txt":
-                return parseTxt(new ByteArrayInputStream(data));
-            case "docx":
-                return parseDocx(new ByteArrayInputStream(data));
-            case "odt":
-                return parseOdt(new ByteArrayInputStream(data));
-            default:
-                throw new IllegalArgumentException("Unsupported file format: " + extension);
+        Function<byte[], Document> parser = PARSERS.get(extension);
+
+        if (parser == null) {
+            throw new IllegalArgumentException("Unsupported file format: " + extension);
         }
+
+        return parser.apply(data);
     }
 
     private static Document parseDocx(InputStream inputStream) throws IOException {

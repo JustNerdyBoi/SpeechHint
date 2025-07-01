@@ -33,7 +33,7 @@ const translations = {
         lightZone: "Light Zone",
         currentWordHighlightFollow: "Highlight current word",
         highlightHeight: "Highlight height",
-        button: "Remote access"
+        button: "Remote"
     },
     ru: {
         title: "Панель управления телесуфлером",
@@ -68,7 +68,7 @@ const translations = {
         lightZone: "Подсветка",
         currentWordHighlightFollow: "Смещать выделение за последним словом",
         highlightHeight: "Высота подсветки",
-        button: "Удалённый доступ"
+        button: "Пульт"
     }
 };
 
@@ -77,7 +77,7 @@ let currentPosition = 0;
 let contextWordIndex = null;
 let words = [];
 let settings = {
-    scrollConfig: { autoScroll: true, speed: 270.0 },
+    scrollConfig: { enableAutoScroll: true, speed: 270.0 },
     sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
     uiConfig: { currentStringHighlight: false, highlightType: "LINE", highlightHeight: 0.5, currentWordHighlightFollow:true, mirrorText: false, textScale: 85, theme: "DARK" }
 };
@@ -221,7 +221,7 @@ async function loadSettings() {
 async function updateSettings() {
     settings = {
         scrollConfig: {
-            autoScroll: document.getElementById('autoScroll').checked,
+            enableAutoScroll: document.getElementById('autoScroll').checked,
             speed: parseFloat(document.getElementById('scrollSpeed').value)
         },
         sttConfig: {
@@ -254,8 +254,8 @@ async function updateSettings() {
 
 // UI functions
  function updateSettingsUI() {
-     const autoScroll = document.getElementById('autoScroll');
-     autoScroll.checked = settings.scrollConfig.autoScroll;
+     const enableAutoScroll = document.getElementById('autoScroll');
+     enableAutoScroll.checked = settings.scrollConfig.enableAutoScroll;
 
      const scrollSpeed = document.getElementById('scrollSpeed');
      if (document.activeElement !== scrollSpeed) {
@@ -365,15 +365,18 @@ function editWordMenuAction(action) {
             words.splice(contextWordIndex + 1, 0, wordObj);
         }
         sendWordsToServer();
+        renderWords();
     } else if (action === 'edit') {
         const oldWord = words[contextWordIndex].text;
         const newWord = prompt('Изменить слово:', oldWord);
         if (newWord === null) return;
         words[contextWordIndex].text = newWord;
         sendWordsToServer();
+        renderWords();
     } else if (action === 'delete') {
         words.splice(contextWordIndex, 1);
         sendWordsToServer();
+        renderWords();
     }
     contextWordIndex = null;
 }

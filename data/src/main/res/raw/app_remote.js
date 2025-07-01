@@ -27,7 +27,7 @@ let settings = {
 };
 
 let currentSettings = {
-    scrollConfig: { autoScroll: true, speed: 270.0 },
+    scrollConfig: { enableAutoScroll: true, speed: 270.0 },
     sttConfig: { sttAfterBufferSize: 16, sttBeforeBufferSize: 5, sttEnabled: true },
     uiConfig: { currentStringHighlight: false, highlightType: "LINE", highlightHeight: 0.5, currentWordHighlightFollow: true, mirrorText: false, textScale: 85, theme: "DARK" }
 };
@@ -99,8 +99,8 @@ function updateSettingsUI() {
 function updateControlButtons() {
     const pauseButton = document.querySelector('.control-button.pause');
     const pauseIcon = pauseButton.querySelector('i');
-    pauseIcon.className = currentSettings.scrollConfig.autoScroll ? 'fas fa-pause' : 'fas fa-play';
-    pauseButton.classList.toggle('active', currentSettings.scrollConfig.autoScroll);
+    pauseIcon.className = currentSettings.scrollConfig.enableAutoScroll ? 'fas fa-pause' : 'fas fa-play';
+    pauseButton.classList.toggle('active', currentSettings.scrollConfig.enableAutoScroll);
 
     const sttButton = document.querySelector('.control-button.stt');
     sttButton.classList.toggle('active', currentSettings.sttConfig.sttEnabled);
@@ -120,7 +120,7 @@ function setupSliders() {
 
 // Control functions
 function togglePause() {
-    currentSettings.scrollConfig.autoScroll = !currentSettings.scrollConfig.autoScroll;
+    currentSettings.scrollConfig.enableAutoScroll = !currentSettings.scrollConfig.enableAutoScroll;
     sendSettings();
 }
 
