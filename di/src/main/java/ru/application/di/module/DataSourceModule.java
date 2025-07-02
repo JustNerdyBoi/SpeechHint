@@ -1,4 +1,4 @@
-package ru.application.speechhint.di;
+package ru.application.di.module;
 
 import android.content.Context;
 
