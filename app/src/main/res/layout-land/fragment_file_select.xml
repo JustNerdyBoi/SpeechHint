@@ -8,7 +8,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:dividerPadding="16dp"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:showDividers="middle">
 
     <com.google.android.material.button.MaterialButton
@@ -16,7 +16,6 @@
         style="@style/FileSourceButtonStyle"
         android:text="@string/load_local_file"
         app:icon="@drawable/ico_local" />
-
 
 
     <com.google.android.material.button.MaterialButton

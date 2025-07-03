@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +17,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.slider.Slider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import ru.application.domain.entity.HighlightType;
@@ -36,49 +37,40 @@ public class SettingsFragment extends Fragment {
     private SettingsViewModel viewModel;
 
     // UIConfig
-    private SeekBar textScaleSeekBar;
-    private TextView textScaleValue;
+    private Slider textScaleSlider;
     private RadioGroup themeRadioGroup;
-    private Switch currentStringHighlightSwitch;
+    private MaterialSwitch currentStringHighlightSwitch;
     private RadioGroup highlightRadioGroup;
     private RadioButton highlightLine;
     private RadioButton highlightPointer;
     private RadioButton highlightLightZone;
     private TextView highlightHeightLabel;
-    private SeekBar highlightHeightSeekBar;
-    private TextView highlightHeightValue;
-    private Switch highlightFollowSwitch;
-    private Switch mirrorTextSwitch;
+    private Slider highlightHeightSlider;
+    private MaterialSwitch highlightFollowSwitch;
+    private MaterialSwitch mirrorTextSwitch;
 
     // ScrollConfig
-    private Switch autoScrollSwitch;
+    private MaterialSwitch autoScrollSwitch;
     private TextView autoscrollSpeedLabel;
-    private SeekBar autoscrollSpeedSeekBar;
-    private TextView autoscrollSpeedValue;
+    private Slider autoscrollSpeedSlider;
 
     // SttConfig
     private TextView sttConfigLabel;
-    private Switch sttEnabledSwitch;
-    private SeekBar beforeBufferSizeSeekBar;
-    private TextView beforeBufferSizeValue;
-    private SeekBar afterBufferSizeSeekBar;
-    private TextView afterBufferSizeValue;
-
-    private Button setDocumentButton;
+    private MaterialSwitch sttEnabledSwitch;
+    private Slider beforeBufferSizeSlider;
+    private Slider afterBufferSizeSlider;
 
     private boolean isInternalUpdate = false;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.settings_fragment, container, false);
 
         viewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
 
         // UIConfig
-        textScaleSeekBar = root.findViewById(R.id.textScaleSeekBar);
-        textScaleValue = root.findViewById(R.id.textScaleValue);
+        textScaleSlider = root.findViewById(R.id.textScaleSlider);
         themeRadioGroup = root.findViewById(R.id.themeRadioGroup);
         currentStringHighlightSwitch = root.findViewById(R.id.currentStringHighlightSwitch);
         highlightRadioGroup = root.findViewById(R.id.highlightRadioGroup);
@@ -86,31 +78,24 @@ public class SettingsFragment extends Fragment {
         highlightPointer = root.findViewById(R.id.highlightPointer);
         highlightLightZone = root.findViewById(R.id.highlightLightZone);
         highlightHeightLabel = root.findViewById(R.id.highlightHeightLabel);
-        highlightHeightSeekBar = root.findViewById(R.id.highlightHeightSeekBar);
-        highlightHeightValue = root.findViewById(R.id.highlightHeightValue);
+        highlightHeightSlider = root.findViewById(R.id.highlightHeightSlider);
         highlightFollowSwitch = root.findViewById(R.id.highlightFollowSwitch);
         mirrorTextSwitch = root.findViewById(R.id.mirrorTextSwitch);
 
         // ScrollConfig
         autoScrollSwitch = root.findViewById(R.id.autoScrollSwitch);
         autoscrollSpeedLabel = root.findViewById(R.id.autoscrollSpeedLabel);
-        autoscrollSpeedSeekBar = root.findViewById(R.id.autoscrollSpeedSeekBar);
-        autoscrollSpeedValue = root.findViewById(R.id.autoscrollSpeedValue);
+        autoscrollSpeedSlider = root.findViewById(R.id.autoscrollSpeedSlider);
 
         // SttConfig
         sttConfigLabel = root.findViewById(R.id.sttConfigLabel);
         sttEnabledSwitch = root.findViewById(R.id.sttEnabledSwitch);
-        beforeBufferSizeSeekBar = root.findViewById(R.id.beforeBufferSizeSeekBar);
-        beforeBufferSizeValue = root.findViewById(R.id.beforeBufferSizeValue);
-        afterBufferSizeSeekBar = root.findViewById(R.id.afterBufferSizeSeekBar);
-        afterBufferSizeValue = root.findViewById(R.id.afterBufferSizeValue);
+        beforeBufferSizeSlider = root.findViewById(R.id.beforeBufferSizeSlider);
+        afterBufferSizeSlider = root.findViewById(R.id.afterBufferSizeSlider);
 
-        setDocumentButton = root.findViewById(R.id.setDocumentButton);
+        Button setDocumentButton = root.findViewById(R.id.setDocumentButton);
         setDocumentButton.setOnClickListener(view -> {
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.mainFrameLayout, new FileSelectFragment())
-                    .commit();
+            requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, new FileSelectFragment()).commit();
         });
 
         applySettings(viewModel.getSettingsLiveData().getValue());
@@ -126,11 +111,9 @@ public class SettingsFragment extends Fragment {
 
         // UIConfig
         UIConfig ui = settings.getUiConfig();
-        textScaleSeekBar.setProgress(ui.getTextScale());
-        textScaleValue.setText(String.valueOf(ui.getTextScale()));
+        textScaleSlider.setValue(ui.getTextScale());
         currentStringHighlightSwitch.setChecked(ui.isCurrentStringHighlight());
-        highlightHeightSeekBar.setProgress((int) (ui.getHighlightHeight() * 100));
-        highlightHeightValue.setText(String.valueOf((int) (ui.getHighlightHeight() * 100)));
+        highlightHeightSlider.setValue((int) (ui.getHighlightHeight() * 100));
         highlightFollowSwitch.setChecked(ui.isCurrentWordHighlightFollow());
         mirrorTextSwitch.setChecked(ui.isMirrorText());
         switch (ui.getTheme()) {
@@ -155,16 +138,13 @@ public class SettingsFragment extends Fragment {
         // ScrollConfig
         ScrollConfig scroll = settings.getScrollConfig();
         autoScrollSwitch.setChecked(scroll.isEnableAutoScroll());
-        autoscrollSpeedSeekBar.setProgress((int) scroll.getSpeed());
-        autoscrollSpeedValue.setText(String.valueOf((int) scroll.getSpeed()));
+        autoscrollSpeedSlider.setValue((int) scroll.getSpeed());
 
         // STT Config
         SttConfig stt = settings.getSttConfig();
         sttEnabledSwitch.setChecked(stt.isSttEnabled());
-        beforeBufferSizeSeekBar.setProgress(stt.getSttBeforeBufferSize());
-        beforeBufferSizeValue.setText(String.valueOf(stt.getSttBeforeBufferSize()));
-        afterBufferSizeSeekBar.setProgress(stt.getSttAfterBufferSize());
-        afterBufferSizeValue.setText(String.valueOf(stt.getSttAfterBufferSize()));
+        beforeBufferSizeSlider.setValue(stt.getSttBeforeBufferSize());
+        afterBufferSizeSlider.setValue(stt.getSttAfterBufferSize());
 
         setSttConfigAvailability(scroll.isEnableAutoScroll(), stt.isSttEnabled());
         setUseSttSwitchDependenciesAvailability(stt.isSttEnabled(), scroll.isEnableAutoScroll());
@@ -175,37 +155,11 @@ public class SettingsFragment extends Fragment {
 
     private void setupListeners() {
         // UIConfig
-        textScaleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                textScaleValue.setText(String.valueOf(progress));
-                if (!isInternalUpdate && fromUser) updateUiConfig();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+        textScaleSlider.addOnChangeListener((s, value, fromUser) -> {
+            if (!isInternalUpdate && fromUser) updateUiConfig();
         });
-        highlightHeightSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                highlightHeightValue.setText(String.valueOf(progress));
-                if (!isInternalUpdate && fromUser) updateUiConfig();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+        highlightHeightSlider.addOnChangeListener((s, value, fromUser) -> {
+            if (!isInternalUpdate && fromUser) updateUiConfig();
         });
         currentStringHighlightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!isInternalUpdate) updateUiConfig();
@@ -227,20 +181,8 @@ public class SettingsFragment extends Fragment {
         autoScrollSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!isInternalUpdate) updateScrollConfig();
         });
-        autoscrollSpeedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                autoscrollSpeedValue.setText(String.valueOf(progress));
-                if (!isInternalUpdate && fromUser) updateScrollConfig();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+        autoscrollSpeedSlider.addOnChangeListener((s, value, fromUser) -> {
+            if (!isInternalUpdate && fromUser) updateScrollConfig();
         });
 
         // SttConfig
@@ -250,35 +192,11 @@ public class SettingsFragment extends Fragment {
             }
             if (!isInternalUpdate) updateSttConfig();
         });
-        beforeBufferSizeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                beforeBufferSizeValue.setText(String.valueOf(progress));
-                if (!isInternalUpdate && fromUser) updateSttConfig();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+        beforeBufferSizeSlider.addOnChangeListener((s, value, fromUser) -> {
+            if (!isInternalUpdate && fromUser) updateSttConfig();
         });
-        afterBufferSizeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                afterBufferSizeValue.setText(String.valueOf(progress));
-                if (!isInternalUpdate && fromUser) updateSttConfig();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+        afterBufferSizeSlider.addOnChangeListener((s, value, fromUser) -> {
+            if (!isInternalUpdate && fromUser) updateSttConfig();
         });
     }
 
@@ -286,10 +204,10 @@ public class SettingsFragment extends Fragment {
         Settings settings = viewModel.getSettingsLiveData().getValue();
         if (settings == null) return;
         UIConfig ui = settings.getUiConfig();
-        ui.setTextScale(textScaleSeekBar.getProgress());
+        ui.setTextScale((int) textScaleSlider.getValue());
         ui.setCurrentStringHighlight(currentStringHighlightSwitch.isChecked());
         ui.setCurrentWordHighlightFollow(highlightFollowSwitch.isChecked());
-        ui.setHighlightHeight(highlightHeightSeekBar.getProgress() / 100f);
+        ui.setHighlightHeight(highlightHeightSlider.getValue() / 100f);
         ui.setMirrorText(mirrorTextSwitch.isChecked());
         ui.setTheme(themeRadioGroup.getCheckedRadioButtonId() == R.id.darkThemeRadio ? Theme.DARK : Theme.LIGHT);
         if (highlightRadioGroup.getCheckedRadioButtonId() == R.id.highlightLine) {
@@ -308,7 +226,7 @@ public class SettingsFragment extends Fragment {
         ScrollConfig scroll = settings.getScrollConfig();
         boolean autoScroll = autoScrollSwitch.isChecked();
         scroll.setEnableAutoScroll(autoScroll);
-        scroll.setSpeed(autoscrollSpeedSeekBar.getProgress());
+        scroll.setSpeed(autoscrollSpeedSlider.getValue());
         viewModel.saveSettings(settings);
     }
 
@@ -318,16 +236,14 @@ public class SettingsFragment extends Fragment {
         SttConfig stt = settings.getSttConfig();
         boolean sttEnabled = sttEnabledSwitch.isChecked();
         stt.setSttEnabled(sttEnabled);
-        stt.setSttBeforeBufferSize(beforeBufferSizeSeekBar.getProgress());
-        stt.setSttAfterBufferSize(afterBufferSizeSeekBar.getProgress());
+        stt.setSttBeforeBufferSize((int) beforeBufferSizeSlider.getValue());
+        stt.setSttAfterBufferSize((int) afterBufferSizeSlider.getValue());
         viewModel.saveSettings(settings);
     }
 
     private void setBufferSizeControlsEnabled(boolean enabled) {
-        beforeBufferSizeSeekBar.setEnabled(enabled);
-        afterBufferSizeSeekBar.setEnabled(enabled);
-        beforeBufferSizeValue.setEnabled(enabled);
-        afterBufferSizeValue.setEnabled(enabled);
+        beforeBufferSizeSlider.setEnabled(enabled);
+        afterBufferSizeSlider.setEnabled(enabled);
     }
 
     private void setSttConfigAvailability(boolean autoScroll, boolean sttEnabled) {
@@ -340,8 +256,7 @@ public class SettingsFragment extends Fragment {
     private void setUseSttSwitchDependenciesAvailability(boolean sttEnabled, boolean autoScrollChecked) {
         boolean autoScrollControlsEnabled = !sttEnabled && autoScrollChecked;
         autoscrollSpeedLabel.setEnabled(autoScrollControlsEnabled);
-        autoscrollSpeedSeekBar.setEnabled(autoScrollControlsEnabled);
-        autoscrollSpeedValue.setEnabled(autoScrollControlsEnabled);
+        autoscrollSpeedSlider.setEnabled(autoScrollControlsEnabled);
 
         setBufferSizeControlsEnabled(sttEnabled && autoScrollChecked);
     }
@@ -352,8 +267,7 @@ public class SettingsFragment extends Fragment {
         highlightLightZone.setEnabled(highlightEnabled);
         boolean highlightHeightAvailability = highlightEnabled && !highlightFollowSwitch.isChecked();
         highlightHeightLabel.setEnabled(highlightHeightAvailability);
-        highlightHeightSeekBar.setEnabled(highlightHeightAvailability);
-        highlightHeightValue.setEnabled(highlightHeightAvailability);
+        highlightHeightSlider.setEnabled(highlightHeightAvailability);
         highlightFollowSwitch.setEnabled(highlightEnabled);
     }
 }

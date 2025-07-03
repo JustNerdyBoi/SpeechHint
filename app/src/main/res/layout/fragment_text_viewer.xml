@@ -17,28 +17,28 @@
 
     <View
         android:id="@+id/lighterView"
-        android:visibility="gone"
         android:layout_width="wrap_content"
-        android:layout_height="1sp"
+        android:layout_height="0sp"
         android:background="@color/stringLighter"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/lineView"
-        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="8dp"
         android:background="@color/red"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/pointerView"
-        android:visibility="gone"
         android:layout_width="16dp"
-        android:layout_height="1sp"
+        android:layout_height="0sp"
         android:background="@color/red"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

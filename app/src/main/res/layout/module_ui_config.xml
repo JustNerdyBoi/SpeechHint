@@ -2,64 +2,55 @@
     android:id="@+id/uiConfigModule"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginVertical="8dp"
     android:orientation="vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/uiConfigTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:text="@string/settings_ui"
-        android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_marginBottom="12dp"/>
+        android:textStyle="bold" />
 
-    <!-- Theme Switcher -->
     <RadioGroup
         android:id="@+id/themeRadioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
-        <RadioButton
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/lightThemeRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_theme_light"/>
-        <RadioButton
+            android:text="@string/settings_theme_light" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/darkThemeRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_theme_dark"/>
+            android:text="@string/settings_theme_dark" />
     </RadioGroup>
 
-    <!-- Text Scale -->
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/settings_text_scale"
-        android:layout_marginBottom="8dp"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="12dp">
-        <SeekBar
-            android:id="@+id/textScaleSeekBar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:max="200"
-            android:min="10"/>
-        <TextView
-            android:id="@+id/textScaleValue"
-            android:layout_width="46dp"
-            android:layout_height="wrap_content"
-            android:text="20"
-            android:gravity="end"/>
-    </LinearLayout>
+        android:layout_marginBottom="8dp"
+        android:text="@string/settings_text_scale" />
 
-    <!-- Highlight Current String -->
-    <Switch
+    <com.google.android.material.slider.Slider
+        android:id="@+id/textScaleSlider"
+        style="@style/Widget.App.Slider"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:stepSize="5.0"
+        android:valueFrom="0.0"
+        android:valueTo="200.0" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/currentStringHighlightSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,59 +60,52 @@
         android:id="@+id/highlightRadioGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
-        <RadioButton
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/highlightLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_highlight_line"/>
-        <RadioButton
+            android:text="@string/settings_highlight_line" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/highlightPointer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_highlight_pointer"/>
-        <RadioButton
+            android:text="@string/settings_highlight_pointer" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/highlightLightZone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_highlight_light_zone"/>
+            android:text="@string/settings_highlight_light_zone" />
     </RadioGroup>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/highlightHeightLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="@string/settings_highlight_height" />
-    <LinearLayout
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/highlightHeightSlider"
+        style="@style/Widget.App.Slider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="12dp">
-        <SeekBar
-            android:id="@+id/highlightHeightSeekBar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:max="100"
-            android:min="0"/>
-        <TextView
-            android:id="@+id/highlightHeightValue"
-            android:layout_width="46dp"
-            android:layout_height="wrap_content"
-            android:text="0.5"
-            android:gravity="end"/>
-    </LinearLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:valueFrom="0.0"
+        android:valueTo="100.0" />
 
 
-    <Switch
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/highlightFollowSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/settings_highlight_follow" />
 
-    <Switch
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/mirrorTextSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

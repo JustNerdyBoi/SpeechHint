@@ -5,7 +5,7 @@
     <string name="enter_google_link">Enter link to Google Drive</string>
     <string name="enter_yandex_link">Enter link to Yandex.Disk</string>
     <string name="link_empty">Link can\'t be empty</string>
-    <string name="load_local_file">Load local file</string>
+    <string name="load_local_file">Local file</string>
     <string name="load_yandex_file">Yandex.Disk</string>
     <string name="edit_word">Edit word</string>
     <string name="delete_word">Delete word</string>

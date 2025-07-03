@@ -3,7 +3,7 @@
     <string name="app_name">SpeechHint</string>
     <string name="select_file">Выбрать файл</string>
     <string name="link_empty">Ссылка не может быть пустой</string>
-    <string name="load_local_file">Загрузить локальный файл</string>
+    <string name="load_local_file">Локальный файл</string>
     <string name="load_google_file">Google Drive</string>
     <string name="load_yandex_file">Яндекс.Диск</string>
     <string name="enter_google_link">Введите ссылку на Google Drive</string>

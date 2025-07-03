@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -32,7 +32,7 @@ public class ServerFragment extends Fragment {
     private ServerViewModel serverViewModel;
     private TeleprompterViewModel teleprompterViewModel;
     private SettingsViewModel settingsViewModel;
-    private Switch switchServer;
+    private MaterialSwitch switchServer;
     private ImageView imageQr;
     private TextView textLink;
 
