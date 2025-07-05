@@ -16,11 +16,17 @@
         android:padding="16dp"
         android:showDividers="middle">
 
-        <include layout="@layout/module_ui_config" />
+        <include
+            android:id="@+id/ui_config"
+            layout="@layout/module_ui_config" />
 
-        <include layout="@layout/module_scroll_config" />
+        <include
+            android:id="@+id/scroll_config"
+            layout="@layout/module_scroll_config" />
 
-        <include layout="@layout/module_stt_config"/>
+        <include
+            android:id="@+id/stt_config"
+            layout="@layout/module_stt_config" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/setDocumentButton"

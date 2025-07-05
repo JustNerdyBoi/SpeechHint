@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -22,48 +21,51 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import ru.application.speechhint.R;
+import ru.application.speechhint.databinding.FragmentFileSelectBinding;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
 
 public class FileSelectFragment extends Fragment {
 
-    private TeleprompterViewModel viewModel;
+    private TeleprompterViewModel teleprompterViewModel;
     private ActivityResultLauncher<Intent> filePickerLauncher;
+    private FragmentFileSelectBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_file_select, container, false);
+        binding = FragmentFileSelectBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
+        teleprompterViewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
         setupFilePicker();
 
-        Button loadLocalBtn = view.findViewById(R.id.button_load_local_file);
-        Button loadGoogleBtn = view.findViewById(R.id.button_load_google_file);
-        Button loadYandexBtn = view.findViewById(R.id.button_load_yandex_file);
-
-        loadLocalBtn.setOnClickListener(v -> {
+        binding.buttonLoadLocalFile.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("*/*");
-            String[] mimeTypes = {"text/plain", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.oasis.opendocument.text"};
+            String[] mimeTypes = {
+                    "text/plain",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "application/vnd.oasis.opendocument.text"
+            };
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             filePickerLauncher.launch(intent);
         });
 
-        loadGoogleBtn.setOnClickListener(v -> showInputLinkDialog(
+        binding.buttonLoadGoogleFile.setOnClickListener(v -> showInputLinkDialog(
                 getString(R.string.enter_google_link),
-                link -> viewModel.LoadGoogleDocument(link)
+                link -> teleprompterViewModel.LoadGoogleDocument(link)
         ));
 
-        loadYandexBtn.setOnClickListener(v -> showInputLinkDialog(
+        binding.buttonLoadYandexFile.setOnClickListener(v -> showInputLinkDialog(
                 getString(R.string.enter_yandex_link),
-                link -> viewModel.LoadYandexDocument(link)
+                link -> teleprompterViewModel.LoadYandexDocument(link)
         ));
     }
 
@@ -77,10 +79,10 @@ public class FileSelectFragment extends Fragment {
                             Uri uri = data.getData();
                             if (uri != null) {
                                 try {
-                                    viewModel.LoadLocalDocument(uri);
+                                    teleprompterViewModel.LoadLocalDocument(uri);
                                 } catch (Exception e) {
                                     Log.e("ERROR", e.toString());
-                                    Toast.makeText(this.requireContext(), "Error loading document", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(requireContext(), "Error loading document", Toast.LENGTH_LONG).show();
                                 }
                             }
                         }
@@ -114,4 +116,9 @@ public class FileSelectFragment extends Fragment {
         void onLinkEntered(String link);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

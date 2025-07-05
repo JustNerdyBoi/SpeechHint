@@ -1,12 +1,12 @@
 package ru.application.speechhint.ui.activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -14,7 +14,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 
 import dagger.hilt.android.AndroidEntryPoint;
-
 import ru.application.domain.entity.Document;
 import ru.application.domain.entity.Theme;
 import ru.application.speechhint.R;
@@ -25,8 +24,6 @@ import ru.application.speechhint.ui.fragment.TextViewerFragment;
 import ru.application.speechhint.viewmodel.ServerViewModel;
 import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
-
-import androidx.appcompat.app.AppCompatDelegate;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
