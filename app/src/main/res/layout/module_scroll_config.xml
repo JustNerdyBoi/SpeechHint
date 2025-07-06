@@ -34,5 +34,5 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:valueFrom="0.0"
-        android:valueTo="400.0" />
+        android:valueTo="500.0" />
 </LinearLayout>

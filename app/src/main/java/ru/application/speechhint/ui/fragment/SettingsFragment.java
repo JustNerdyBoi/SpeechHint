@@ -82,13 +82,13 @@ public class SettingsFragment extends Fragment {
         // ScrollConfig
         ScrollConfig scroll = settings.getScrollConfig();
         binding.scrollConfig.autoScrollSwitch.setChecked(scroll.isEnableAutoScroll());
-        binding.scrollConfig.autoscrollSpeedSlider.setValue((int) scroll.getSpeed());
+        binding.scrollConfig.autoscrollSpeedSlider.setValue(Math.min((int) scroll.getSpeed(), 500));
 
         // STT Config
         SttConfig stt = settings.getSttConfig();
         binding.sttConfig.sttEnabledSwitch.setChecked(stt.isSttEnabled());
-        binding.sttConfig.beforeBufferSizeSlider.setValue(stt.getSttBeforeBufferSize());
-        binding.sttConfig.afterBufferSizeSlider.setValue(stt.getSttAfterBufferSize());
+        binding.sttConfig.beforeBufferSizeSlider.setValue(Math.min(stt.getSttBeforeBufferSize(), 20));
+        binding.sttConfig.afterBufferSizeSlider.setValue(Math.min(stt.getSttAfterBufferSize(), 20));
 
         setSttConfigAvailability(scroll.isEnableAutoScroll(), stt.isSttEnabled());
         setUseSttSwitchDependenciesAvailability(stt.isSttEnabled(), scroll.isEnableAutoScroll());
