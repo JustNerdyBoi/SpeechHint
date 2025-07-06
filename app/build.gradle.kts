@@ -5,12 +5,11 @@ plugins {
 
 android {
     namespace = "ru.application.speechhint"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ru.application.speechhint"
-        minSdk = 33
-        targetSdk = 35
+        minSdk = 26
         versionCode = 1
         versionName = "1.0"
 
