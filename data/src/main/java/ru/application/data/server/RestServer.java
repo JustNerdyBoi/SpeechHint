@@ -177,7 +177,11 @@ public final class RestServer extends NanoHTTPD {
     private Response handleSetSettings(IHTTPSession session) throws IOException {
         String json = readRequestBody(session);
         if (listener != null) {
-            listener.onSettingsReceived(gson.fromJson(json, Settings.class));
+            Settings settings = gson.fromJson(json, Settings.class);
+            if (settings.getSttConfig().getSttBeforeBufferSize() < 0 || settings.getSttConfig().getSttAfterBufferSize() < 0 || settings.getScrollConfig().getSpeed() < 0 || settings.getUiConfig().getTextScale() < 0 || settings.getUiConfig().getHighlightHeight() < 0) {
+                return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "application/json; charset=UTF-8", "{\"status\":\"argumentError\"}");
+            }
+            listener.onSettingsReceived(settings);
         }
         return newFixedLengthResponse(Response.Status.OK, "application/json; charset=UTF-8", "{\"status\":\"ok\"}");
     }
