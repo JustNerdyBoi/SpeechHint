@@ -11,7 +11,9 @@
         android:id="@+id/switch_server"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/server_switch_server" />
+        android:text="@string/server_switch_server"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"/>
 
     <ImageView
         android:id="@+id/image_qr"

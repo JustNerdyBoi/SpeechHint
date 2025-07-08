@@ -82,6 +82,7 @@ public class ServerFragment extends Fragment {
                         break;
 
                     case NO_DATA:
+                        binding.switchServer.setChecked(false);
                         Toast.makeText(requireContext(), R.string.paid_feature_update_toast, Toast.LENGTH_SHORT).show();
                         break;
                 }

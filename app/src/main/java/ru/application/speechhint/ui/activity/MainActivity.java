@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         serverViewModel = new ViewModelProvider(this).get(ServerViewModel.class);
         billingViewModel = new ViewModelProvider(this).get(BillingViewModel.class);
 
-        billingViewModel.checkAllSubscriptions();
-
         setupListeners();
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
@@ -99,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case NO_DATA:
+                        settings.getSttConfig().setSttEnabled(false);
                         Toast.makeText(this, R.string.paid_feature_update_toast, Toast.LENGTH_SHORT).show();
                         break;
                 }
