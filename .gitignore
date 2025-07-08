@@ -6,6 +6,7 @@
 
 # Gradle files and directories (build system)
 .gradle/
+gradle.properties
 build/ # This is the main directory for all compiled output and intermediate files
 
 # Common compiled outputs and artifacts

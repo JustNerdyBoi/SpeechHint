@@ -16,6 +16,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(project.properties["KEYSTORE_FILE"] as String)
+            storePassword = project.properties["KEYSTORE_PASSWORD"] as String
+            keyAlias = project.properties["KEY_ALIAS"] as String
+            keyPassword = project.properties["KEY_PASSWORD"] as String
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -25,6 +34,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     buildFeatures {
@@ -44,6 +54,9 @@ dependencies {
     annotationProcessor(libs.dagger.hilt.android.compiler)
 
     implementation(libs.zxing.android.embedded)
+
+    implementation(platform("ru.rustore.sdk:bom:2025.05.02"))
+    implementation("ru.rustore.sdk:billingclient")
 
     implementation(libs.appcompat)
     implementation(libs.material)

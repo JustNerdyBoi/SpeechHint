@@ -1,5 +1,7 @@
 [versions]
 agp = "8.11.0"
+bom = "2025.05.02"
+bomVersion = "2025.05.03"
 gson = "2.13.1"
 hiltAndroidGradlePlugin = "2.56.2"
 junit = "4.13.2"
@@ -12,8 +14,12 @@ constraintlayout = "2.2.1"
 nanohttpd = "2.3.1"
 poiOoxml = "5.4.1"
 zxingAndroidEmbedded = "4.3.0"
+playServicesWallet = "19.4.0"
 
 [libraries]
+billingclient = { module = "ru.rustore.sdk:billingclient" }
+bom = { module = "ru.rustore.sdk:bom", version.ref = "bom" }
+bom-v20250503 = { module = "ru.rustore.sdk:bom", version.ref = "bomVersion" }
 dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidGradlePlugin" }
 dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidGradlePlugin" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -27,8 +33,10 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 nanohttpd = { module = "org.nanohttpd:nanohttpd", version.ref = "nanohttpd" }
+pay = { module = "ru.rustore.sdk:pay" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+play-services-wallet = { group = "com.google.android.gms", name = "play-services-wallet", version.ref = "playServicesWallet" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

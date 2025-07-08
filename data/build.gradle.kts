@@ -35,6 +35,9 @@ dependencies {
     implementation(libs.language.id)
     implementation(libs.nanohttpd)
 
+    implementation(platform("ru.rustore.sdk:bom:2025.05.02"))
+    implementation("ru.rustore.sdk:billingclient")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
 }

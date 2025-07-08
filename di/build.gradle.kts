@@ -32,6 +32,9 @@ android {
 dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
+    implementation(platform("ru.rustore.sdk:bom:2025.05.02"))
+    implementation("ru.rustore.sdk:billingclient")
+
     implementation(libs.dagger.hilt.android)
     annotationProcessor(libs.dagger.hilt.android.compiler)
 

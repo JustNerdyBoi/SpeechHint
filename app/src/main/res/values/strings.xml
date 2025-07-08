@@ -31,4 +31,9 @@
     <string name="settings_highlight_follow">Highlight current word</string>
     <string name="settings_highlight_height">Highlight height</string>
     <string name="set_document_button">Set Document</string>
+    <string name="paid_feature_header">This is paid feature</string>
+    <string name="paid_feature_accept">Open shop</string>
+    <string name="paid_feature_body">You can try it for first 7 days then buy forever</string>
+    <string name="paid_feature_deny">Cancel</string>
+    <string name="paid_feature_update_toast">Updating purchases, please wait</string>
 </resources>

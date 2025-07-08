@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +19,10 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import ru.application.domain.entity.ServerConnectionInfo;
+import ru.application.speechhint.R;
 import ru.application.speechhint.databinding.FragmentServerBinding;
+import ru.application.speechhint.ui.dialog.SubscriptionDialog;
+import ru.application.speechhint.viewmodel.BillingViewModel;
 import ru.application.speechhint.viewmodel.ServerViewModel;
 import ru.application.speechhint.viewmodel.SettingsViewModel;
 import ru.application.speechhint.viewmodel.TeleprompterViewModel;
@@ -30,6 +34,7 @@ public class ServerFragment extends Fragment {
     private ServerViewModel serverViewModel;
     private TeleprompterViewModel teleprompterViewModel;
     private SettingsViewModel settingsViewModel;
+    private BillingViewModel billingViewModel;
 
     @Nullable
     @Override
@@ -47,6 +52,7 @@ public class ServerFragment extends Fragment {
         serverViewModel = new ViewModelProvider(requireActivity()).get(ServerViewModel.class);
         settingsViewModel = new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
         teleprompterViewModel = new ViewModelProvider(requireActivity()).get(TeleprompterViewModel.class);
+        billingViewModel = new ViewModelProvider(requireActivity()).get(BillingViewModel.class);
 
         if (serverViewModel.getServerConnectionInfo() != null) {
             binding.switchServer.setChecked(true);
@@ -55,17 +61,30 @@ public class ServerFragment extends Fragment {
 
         binding.switchServer.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                serverViewModel.startServer();
-                serverViewModel.setServerCurrentSettings(settingsViewModel.getSettingsLiveData().getValue());
-                serverViewModel.setServerCurrentDocument(teleprompterViewModel.getDocumentLiveData().getValue());
-                serverViewModel.setServerCurrentPosition(teleprompterViewModel.getCurrentPositionLiveData().getValue());
+                switch (billingViewModel.checkSubscription("remote_control_purchase")) {
+                    case ACTIVE:
+                        serverViewModel.startServer();
+                        serverViewModel.setServerCurrentSettings(settingsViewModel.getSettingsLiveData().getValue());
+                        serverViewModel.setServerCurrentDocument(teleprompterViewModel.getDocumentLiveData().getValue());
+                        serverViewModel.setServerCurrentPosition(teleprompterViewModel.getCurrentPositionLiveData().getValue());
 
-                ServerConnectionInfo info = serverViewModel.getServerConnectionInfo();
-                if (info != null) {
-                    Log.i("SERVER", info.getIp() + ":" + info.getPort());
+                        ServerConnectionInfo info = serverViewModel.getServerConnectionInfo();
+                        if (info != null) {
+                            Log.i("SERVER", info.getIp() + ":" + info.getPort());
+                        }
+
+                        showQrAndLink();
+                        break;
+
+                    case NOT_ACTIVE:
+                        binding.switchServer.setChecked(false);
+                        SubscriptionDialog.show(requireContext(), () -> billingViewModel.purchaseSubscription("remote_control_purchase"));
+                        break;
+
+                    case NO_DATA:
+                        Toast.makeText(requireContext(), R.string.paid_feature_update_toast, Toast.LENGTH_SHORT).show();
+                        break;
                 }
-
-                showQrAndLink();
             } else {
                 serverViewModel.stopServer();
                 binding.imageQr.setVisibility(View.GONE);
