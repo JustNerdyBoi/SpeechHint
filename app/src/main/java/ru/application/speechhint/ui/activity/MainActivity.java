@@ -93,11 +93,13 @@ public class MainActivity extends AppCompatActivity {
                 switch (billingViewModel.checkSubscription("speech_recognition_purchase")) {
                     case NOT_ACTIVE:
                         settings.getSttConfig().setSttEnabled(false);
+                        settingsViewModel.saveSettings(settings);
                         SubscriptionDialog.show(this, () -> billingViewModel.purchaseSubscription("speech_recognition_purchase"));
                         break;
 
                     case NO_DATA:
                         settings.getSttConfig().setSttEnabled(false);
+                        settingsViewModel.saveSettings(settings);
                         Toast.makeText(this, R.string.paid_feature_update_toast, Toast.LENGTH_SHORT).show();
                         break;
                 }
